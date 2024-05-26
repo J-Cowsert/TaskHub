@@ -1,0 +1,6 @@
+[submodule "vendor/GLFW"]
+	path = vendor/GLFW
+	url = https://github.com/DexNipp/glfw.git
+[submodule "vendor/imgui"]
+	path = vendor/imgui
+	url = https://github.com/DexNipp/imgui.git
