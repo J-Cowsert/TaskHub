@@ -11,6 +11,7 @@ obj/
 *.vcxproj.filters
 *.sln
 *.log
+imgui.ini
 Makefile
 
 # Exclude
