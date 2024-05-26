@@ -1,4 +1,5 @@
 #pragma once
+#include "Layer.h"
 #include "imgui.h"
 #include <string>
 #include <vector>
@@ -20,6 +21,15 @@ namespace taskhub {
 		~Application();
 
 		void Run();
+		void Close();
+
+		template<typename T> 
+		void PushLayer() {
+			static_assert(std::is_base_of<Layer, T>::value, "Pushed type is not subclass of Layer");
+			m_LayerStack.emplace_back(std::make_shared<T>())->OnAttach();
+		}
+
+		void PushLayer(const std::shared_ptr<Layer>& layer) { m_LayerStack.emplace_back(layer); layer->OnAttach(); }
 
 		GLFWwindow* GetWindow() const { return m_Window; }
 
@@ -28,12 +38,12 @@ namespace taskhub {
 		void Shutdown();
 
 	private:
-
 		GLFWwindow* m_Window = nullptr;
 		ApplicationProvision m_AppProvision;
 		bool m_Running = true;
-	};
 
+		std::vector<std::shared_ptr<Layer>> m_LayerStack;
+	};
 
 	// To be defined in client app
 	Application* CreateApplication();
