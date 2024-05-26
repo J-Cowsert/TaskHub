@@ -1,23 +1,25 @@
-project "App"
+project "TaskHubApp"
    kind "ConsoleApp"
    language "C++"
    cppdialect "C++20"
    targetdir "Binaries/%{cfg.buildcfg}"
    staticruntime "off"
 
-   files { "Source/**.h", "Source/**.cpp" }
+   files { "src/**.h", "src/**.cpp" }
 
    includedirs
    {
-      "Source",
+      "src",
 
-	  -- Include Core
-	  "../Core/Source"
+	  -- Include TaskHubCore
+	  "../TaskHub/src",
+      "vendor/imgui",
+      "vendor/glfw/include"
    }
 
    links
    {
-      "Core"
+      "TaskHub"
    }
 
    targetdir ("../Binaries/" .. OutputDir .. "/%{prj.name}")

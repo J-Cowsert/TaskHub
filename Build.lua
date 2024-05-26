@@ -1,8 +1,8 @@
 -- premake5.lua
-workspace "New Project"
+workspace "TaskHub"
    architecture "x64"
    configurations { "Debug", "Release", "Dist" }
-   startproject "App"
+   startproject "TaskHubApp"
 
    -- Workspace-wide build options for MSVC
    filter "system:windows"
@@ -10,8 +10,14 @@ workspace "New Project"
 
 OutputDir = "%{cfg.system}-%{cfg.architecture}/%{cfg.buildcfg}"
 
-group "Core"
-	include "Core/Build-Core.lua"
+
+group "TaskHub"
+   include "TaskHub/Build-Core.lua"
 group ""
 
-include "App/Build-App.lua"
+group "Dependencies"
+include "vendor/imgui"
+include "vendor/glfw"
+group ""
+
+include "TaskHubApp/Build-App.lua"
