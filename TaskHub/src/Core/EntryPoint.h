@@ -1,14 +1,13 @@
 #pragma once
 
-#include "Application.h"
 
-extern  taskhub::Application* taskhub::CreateApplication();
+#include "Core/Core.h"
+#include "Core/Application.h"
 
-taskhub::Application* taskhub::CreateApplication() {
 
-	auto app = taskhub::CreateApplication();
-	app->Run();
-	delete app;
-
-	return app;
+int main()
+{
+	taskhub::Application* App = taskhub::CreateApplication();
+	App->Run();
+	delete App;
 }

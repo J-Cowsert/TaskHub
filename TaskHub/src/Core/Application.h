@@ -1,5 +1,5 @@
 #pragma once
-//#include "imgui.h"
+#include "imgui.h"
 #include <string>
 #include <vector>
 #include <memory>
@@ -34,5 +34,7 @@ namespace taskhub {
 		bool m_Running = true;
 	};
 
+
+	// To be defined in client app
 	Application* CreateApplication();
 }

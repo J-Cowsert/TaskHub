@@ -12,7 +12,6 @@ static void glfw_error_callback(int error, const char* description) {
 
 namespace taskhub {
 
-
 	Application::Application(const ApplicationProvision& provision) {
 		Init();
 	}

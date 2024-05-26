@@ -13,8 +13,8 @@ project "TaskHubApp"
 
 	  -- Include TaskHubCore
 	  "../TaskHub/src",
-      "vendor/imgui",
-      "vendor/glfw/include"
+      "../vendor/imgui",
+      "../vendor/glfw/include"
    }
 
    links

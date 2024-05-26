@@ -16,8 +16,8 @@ group "TaskHub"
 group ""
 
 group "Dependencies"
-include "vendor/imgui"
-include "vendor/glfw"
+   include "vendor/imgui"
+   include "vendor/glfw"
 group ""
 
 include "TaskHubApp/Build-App.lua"
