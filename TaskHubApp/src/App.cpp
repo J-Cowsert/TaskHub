@@ -1,10 +1,8 @@
-
 #include "Core/Application.h"
 #include "Core/EntryPoint.h"
 
 class ToolDemo : public taskhub::Layer {
 public:
-
 	void OnUIRender() override {
 		ImGui::ShowDemoWindow();
 		ImGui::ShowStyleEditor();

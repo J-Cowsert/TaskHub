@@ -2,11 +2,7 @@
 #include <GLFW/glfw3.h>
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
-
-
-//#include <stdio.h>    // printf, fprintf
 #include <iostream>
-#pragma once
 
 static void glfw_error_callback(int error, const char* description) {
 
@@ -16,6 +12,7 @@ static void glfw_error_callback(int error, const char* description) {
 namespace taskhub {
 
 	Application::Application(const ApplicationProvision& provision) {
+		m_AppProvision = provision;
 		Init();
 	}
 
@@ -152,7 +149,6 @@ namespace taskhub {
 		// Setup Platform/Renderer bindings
 		ImGui_ImplGlfw_InitForOpenGL(m_Window, true);
 		ImGui_ImplOpenGL3_Init("#version 410");
-	
 	}
 
 	void Application::Shutdown() {
