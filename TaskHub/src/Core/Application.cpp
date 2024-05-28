@@ -1,4 +1,6 @@
 #include "Application.h"
+#include "Gui/ImGuiStyle.h"
+#include "Gui/Roboto-Regular.embed"
 #include <GLFW/glfw3.h>
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
@@ -76,7 +78,6 @@ namespace taskhub {
 				ImGui::PopStyleVar(2);
 
 				// Submit the DockSpace
-				ImGuiIO& io = ImGui::GetIO();
 				if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
 				{
 					ImGuiID dockspace_id = ImGui::GetID("AppDockspace");
@@ -149,6 +150,13 @@ namespace taskhub {
 		// Setup Platform/Renderer bindings
 		ImGui_ImplGlfw_InitForOpenGL(m_Window, true);
 		ImGui_ImplOpenGL3_Init("#version 410");
+
+		ImFontConfig fontConfig;
+		fontConfig.FontDataOwnedByAtlas = false;
+		ImFont* robotoFont = io.Fonts->AddFontFromMemoryTTF((void*)g_RobotoRegular, sizeof(g_RobotoRegular), 20.0f, &fontConfig);
+		io.FontDefault = robotoFont;
+
+		UI::SetTaskHubTheme();
 	}
 
 	void Application::Shutdown() {
