@@ -3,6 +3,8 @@
 #include "KeyCodes.h"
 #include "MouseCodes.h"
 
+struct ImVec2;
+
 namespace taskhub {
 
 	class Input {
