@@ -6,6 +6,9 @@
 #include "backends/imgui_impl_opengl3.h"
 #include <iostream>
 
+
+static taskhub::Application* s_Instance = nullptr;
+
 static void glfw_error_callback(int error, const char* description) {
 
 	fprintf(stderr, "Glfw Error %d: %s\n", error, description);
@@ -13,12 +16,16 @@ static void glfw_error_callback(int error, const char* description) {
 
 namespace taskhub {
 
-	Application::Application(const ApplicationProvision& provision) {
-		m_AppProvision = provision;
+	Application::Application(const ApplicationProvision& provision)
+		: m_AppProvision(provision) 
+	{
+		s_Instance = this;
 		Init();
 	}
 
 	Application::~Application() {
+
+		s_Instance = nullptr;
 		Shutdown();
 	}
 
@@ -109,6 +116,11 @@ namespace taskhub {
 	void Application::Close()
 	{
 		m_Running = false;
+	}
+
+	Application& Application::Get()
+	{
+		return *s_Instance;
 	}
 
 	void Application::Init() {
