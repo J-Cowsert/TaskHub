@@ -27,21 +27,21 @@ project "TaskHub"
 
    filter "system:windows"
        systemversion "latest"
-       defines { }
+       defines { "HUB_PLATFORM_WINDOWS" }
 
    filter "configurations:Debug"
-       defines { "DEBUG" }
+       defines { "HUB_DEBUG" }
        runtime "Debug"
        symbols "On"
 
    filter "configurations:Release"
-       defines { "RELEASE" }
+       defines { "HUB_RELEASE" }
        runtime "Release"
        optimize "On"
        symbols "On"
 
    filter "configurations:Dist"
-       defines { "DIST" }
+       defines { "HUB_DIST" }
        runtime "Release"
        optimize "On"
        symbols "Off"
