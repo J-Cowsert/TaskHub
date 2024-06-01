@@ -128,13 +128,13 @@ namespace taskhub {
 		glfwSetErrorCallback(glfw_error_callback);
 
 		if (!glfwInit()) {
-			std::cout << "glfw failed to init";
+			HUB_CORE_ERROR("glfw failed to initialize");
 			return;
 		}
 
 		m_Window = glfwCreateWindow(m_AppProvision.Width, m_AppProvision.Height, m_AppProvision.Name.c_str(), nullptr, nullptr);
 		if (m_Window == nullptr) {
-			std::cout << "glfw failed to create window";
+			HUB_CORE_ERROR("glfw failed to create window");
 			return;
 		}
 		glfwMakeContextCurrent(m_Window);

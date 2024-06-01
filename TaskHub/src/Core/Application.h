@@ -1,4 +1,5 @@
 #pragma once
+#include "Log.h"
 #include "Layer.h"
 #include "imgui.h"
 #include <string>
