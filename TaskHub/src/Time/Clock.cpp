@@ -14,7 +14,7 @@ namespace taskhub {
 		return FormatTime(time_of_day);
 	}
 
-	std::string Clock::GetTheDate() {
+	std::string Clock::GetTheDate() { // TODO: use chrono calender stuff instead
 
 		auto now = std::chrono::system_clock::now();
 		std::time_t now_time = std::chrono::system_clock::to_time_t(now);

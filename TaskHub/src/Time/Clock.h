@@ -7,7 +7,7 @@ namespace taskhub {
 
 	class Clock {
 	public:
-		Clock(std::string timezone)
+		Clock(const std::string timezone)
 			: m_TimeZone(timezone)
 		{
 		}
