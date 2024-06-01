@@ -1,6 +1,9 @@
 #include "Core/Application.h"
 #include "Core/EntryPoint.h"
-#include "Timer.h"
+#include "Input/Input.h"
+#include "Time/Clock.h"
+#include "Time/Stopwatch.h"
+#include "Gui/Roboto-Regular.embed"
 #include <iostream>
 #include <sstream>
 
@@ -14,18 +17,12 @@ public:
 
 class ToDoList : public taskhub::Layer {
 public:
-    void OnAttach() override {
-        
-    }
-
 	void OnUIRender() override {
         ImGui::Begin("todo");
         ShowTodoListApp();
         ImGui::End();
-        
 	}
 
-    
     struct TodoItem {
         std::string text;
         bool completed;
@@ -34,14 +31,14 @@ public:
     void ShowTodoListApp() {
         static std::vector<TodoItem> todo_items;
         static char new_todo_text[256] = "";
-
+        ImGui::BeginChild("todo");
         if (ImGui::TreeNode("Todo List")) {
             ImGui::Text("Manage your tasks:");
 
             // Input for new todo item
-            ImGui::InputText("New Task", new_todo_text, IM_ARRAYSIZE(new_todo_text));
+            ImGui::InputText("##NewTask", new_todo_text, IM_ARRAYSIZE(new_todo_text));
             ImGui::SameLine();
-            if (ImGui::Button("Add Task")) {
+            if (ImGui::Button("Add Task") || taskhub::Input::IsKeyPressed(taskhub::Key::Enter)) {
                 if (strlen(new_todo_text) > 0) {
                     todo_items.push_back({ std::string(new_todo_text), false });
                     new_todo_text[0] = '\0'; // Clear input field
@@ -83,19 +80,26 @@ public:
 
             ImGui::TreePop();
         }
+        ImGui::EndChild();
     }
 };
+
 static bool show_clock_overlay = true;
-class ClockTime : public taskhub::Layer {
+static bool show_stopwatch = true;
+
+class TimeUtilTest : public taskhub::Layer {
 public:
-    
+
+   
+
     void OnUIRender() override {
         ShowClockOverlay(&show_clock_overlay);
+        ShowStopwatch(&show_stopwatch);
     }
 
     void ShowClockOverlay(bool* p_open)
     {
-        static int location = 0;
+        static int location = -2; //Center
         ImGuiIO& io = ImGui::GetIO();
         ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
         if (location >= 0)
@@ -119,13 +123,16 @@ public:
             ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
             window_flags |= ImGuiWindowFlags_NoMove;
         }
-        ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
+        ImGui::SetNextWindowBgAlpha(0.55f); // Transparent background
+
         if (ImGui::Begin("Clock overlay", p_open, window_flags))
         {
-           
-            ImGui::Text("Simple Clock overlay\n" "(right-click to change position)");
+
+            ImGui::Text("Clock\n" "(right-click to change position)");
             ImGui::Separator();
-            DisplayClock(m_Clock);
+
+            DisplayClockTime(m_Clock);
+            DisplayClockDate(m_Clock);
 
             if (ImGui::BeginPopupContextWindow())
             {
@@ -138,42 +145,65 @@ public:
                 if (p_open && ImGui::MenuItem("Close")) *p_open = false;
                 ImGui::EndPopup();
             }
-            
+
         }
+
         ImGui::End();
     }
 
-    std::string FormatTime(const std::chrono::hh_mm_ss<std::chrono::seconds>& time) {
+    void ShowStopwatch(bool* p_open) {
 
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10)); // Increase button padding
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(10, 10)); // Increase button spacing
+
+        if (ImGui::Begin("Stopwatch", p_open)) {
+            if (ImGui::Button("Start"))
+                m_Stopwatch.Start();
+            ImGui::SameLine();
+            if (ImGui::Button("Stop"))
+                m_Stopwatch.Stop();
+            ImGui::SameLine();
+            if (ImGui::Button("Reset"))
+                m_Stopwatch.Reset();
+        }
+        ImGui::PopStyleVar(2);
+
+        float elapsedTime = m_Stopwatch.GetElapsedTime();
         std::ostringstream oss;
-        oss << std::setw(2) << std::setfill('0') << time.hours().count() << ":"
-            << std::setw(2) << std::setfill('0') << time.minutes().count() << ":"
-            << std::setw(2) << std::setfill('0') << time.seconds().count();
-        return oss.str();
-    }
+        oss << std::fixed << std::setprecision(2) << "Elapsed Time: " << elapsedTime << " seconds";
+        ImGui::Text("%s", oss.str().c_str());
 
-    void DisplayClock(taskhub::Clock& clock) {
-      
-        auto time = clock.GetTime();
-        std::string formattedTime = FormatTime(time);
-        ImGui::Text("Current Time: %s", formattedTime.c_str());
+        ImGui::End();
     }
 
 private:
-    taskhub::Clock m_Clock = (taskhub::Clock("America/Chicago"));
-   
-};
+    void DisplayClockTime(taskhub::Clock& clock) {
+      
+        std::string time = clock.GetTheTime();
+        ImGui::Text("Time: %s", time.c_str());
+    }
+    void DisplayClockDate(taskhub::Clock& clock) {
+        
+        std::string date = clock.GetTheDate();
+        ImGui::Text("Date: %s", date.c_str());
+    }
 
+private:
+    taskhub::Clock m_Clock = taskhub::Clock("America/Chicago");  
+    taskhub::Stopwatch m_Stopwatch = taskhub::Stopwatch();
+
+    ImGuiIO& io = ImGui::GetIO();
+};
 
 taskhub::Application* taskhub::CreateApplication() {
 
 	taskhub::ApplicationProvision provision;
-	provision.Name = "Test";
 
 	taskhub::Application* app = new taskhub::Application(provision);
+
 	app->PushLayer<ImGuiTools>();
     app->PushLayer<ToDoList>();
-    app->PushLayer<ClockTime>();
+    app->PushLayer<TimeUtilTest>();
 
 	return app;
 }
