@@ -5,7 +5,6 @@
 
 namespace taskhub {
 
-
 	class Clock {
 	public:
 		Clock(std::string timezone)
@@ -13,8 +12,10 @@ namespace taskhub {
 		{
 		}
 
-		std::string GetCurrentTime();
-		std::string GetCurrentDate();
+		~Clock() = default;
+
+		std::string GetTheTime();
+		std::string GetTheDate();
 
 	private:
 		std::string FormatTime(const std::chrono::hh_mm_ss<std::chrono::seconds>& time);

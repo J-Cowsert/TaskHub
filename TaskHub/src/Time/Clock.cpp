@@ -3,7 +3,7 @@
 
 namespace taskhub {
 
-	std::string Clock::GetCurrentTime() {
+	std::string Clock::GetTheTime() {
 
 		std::chrono::zoned_time zone{ m_TimeZone, std::chrono::floor<std::chrono::seconds>(std::chrono::system_clock::now()) };
 		auto time = zone.get_local_time();
@@ -14,11 +14,11 @@ namespace taskhub {
 		return FormatTime(time_of_day);
 	}
 
-	std::string Clock::GetCurrentDate() {
+	std::string Clock::GetTheDate() {
 
 		auto now = std::chrono::system_clock::now();
 		std::time_t now_time = std::chrono::system_clock::to_time_t(now);
-		std::tm* local_time = std::localtime(&now_time);
+		std::tm* local_time = std::localtime(&now_time);					// not thread safe
 
 		std::ostringstream oss;
 		oss << (local_time->tm_year + 1900) << '-'
