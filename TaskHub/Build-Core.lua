@@ -11,14 +11,15 @@ project "TaskHub"
    {
         "src",
 
-        "../vendor/imgui",
-        "../vendor/glfw/include"
+        "../Vendor/imgui",
+        "../Vendor/glfw/include",
+        "../Vendor/spdlog/include"
    }
 
    links
    {
         "ImGui",
-        "GLFW",
+        "GLFW"
    }
 
    targetdir ("../Binaries/" .. OutputDir .. "/%{prj.name}")

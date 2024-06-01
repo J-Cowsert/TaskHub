@@ -10,11 +10,10 @@ project "TaskHubApp"
    includedirs
    {
       "src",
-
-	  -- Include TaskHubCore
 	  "../TaskHub/src",
-      "../vendor/imgui",
-      "../vendor/glfw/include"
+      "../Vendor/imgui",
+      "../Vendor/glfw/include",
+      "../Vendor/spdlog/include"
    }
 
    links
