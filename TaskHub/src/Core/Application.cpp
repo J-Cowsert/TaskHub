@@ -1,9 +1,9 @@
 #include "Application.h"
 #include "Gui/ImGuiStyle.h"
-#include "Gui/Roboto-Regular.embed"
 #include <GLFW/glfw3.h>
-#include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
+#include "backends/imgui_impl_glfw.h"
+#include "Gui/Roboto-Regular.embed"
 #include <iostream>
 
 
@@ -123,17 +123,18 @@ namespace taskhub {
 		return *s_Instance;
 	}
 
-	void Application::Init() {
+	void Application::Init() { 
 
 		glfwSetErrorCallback(glfw_error_callback);
 
-		if (!glfwInit()) {
+		if (!glfwInit()) { // TODO: Use Assert instead
 			HUB_CORE_ERROR("glfw failed to initialize");
 			return;
 		}
 
 		m_Window = glfwCreateWindow(m_AppProvision.Width, m_AppProvision.Height, m_AppProvision.Name.c_str(), nullptr, nullptr);
-		if (m_Window == nullptr) {
+		
+		if (m_Window == nullptr) { // TODO: Use Assert instead
 			HUB_CORE_ERROR("glfw failed to create window");
 			return;
 		}
