@@ -3,6 +3,7 @@
 #include "Input/Input.h"
 #include "Time/Clock.h"
 #include "Time/Stopwatch.h"
+#include "Time/Timer.h"
 #include "Gui/Roboto-Regular.embed"
 #include <iostream>
 #include <sstream>
@@ -86,15 +87,15 @@ public:
 
 static bool show_clock_overlay = true;
 static bool show_stopwatch = true;
+static bool show_timer = true;
 
 class TimeUtilTest : public taskhub::Layer {
 public:
 
-   
-
     void OnUIRender() override {
         ShowClockOverlay(&show_clock_overlay);
         ShowStopwatch(&show_stopwatch);
+        ShowTimer(&show_timer);
     }
 
     void ShowClockOverlay(bool* p_open)
@@ -176,6 +177,39 @@ public:
         ImGui::End();
     }
 
+    void ShowTimer(bool* p_open) {
+
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10)); // Increase button padding
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(10, 10)); // Increase button spacing
+
+        static float time;
+        if (ImGui::Begin("Timer", p_open)) {
+            ImGui::InputFloat("##Time", &time, 0.1f, 1.0f);
+            if (ImGui::Button("Set Time")) {
+                m_Timer.SetTimer(time);
+            }  
+            ImGui::SameLine();
+            if (ImGui::Button("Reset Time")) {
+                m_Timer.Reset();
+            }
+            if (ImGui::Button("Start")) {
+                m_Timer.Start();
+            }
+            if (ImGui::Button("Pause")) {
+                m_Timer.Stop();
+            }
+        }
+
+        ImGui::PopStyleVar(2);
+
+        float remainingTime = m_Timer.GetRemainingTime();
+        std::ostringstream oss;
+        oss << std::fixed << std::setprecision(2) << "Remaining Time: " << remainingTime << " seconds";
+        ImGui::Text("%s", oss.str().c_str());
+
+        ImGui::End();
+    }
+
 private:
     void DisplayClockTime(taskhub::Clock& clock) {
       
@@ -191,8 +225,7 @@ private:
 private:
     taskhub::Clock m_Clock = taskhub::Clock("America/Chicago");  
     taskhub::Stopwatch m_Stopwatch = taskhub::Stopwatch();
-
-    ImGuiIO& io = ImGui::GetIO();
+    taskhub::Timer m_Timer = taskhub::Timer();
 };
 
 taskhub::Application* taskhub::CreateApplication() {
