@@ -1,9 +1,11 @@
 #include "Core/Application.h"
+#include "Core/Assert.h"
 #include "Core/EntryPoint.h"
 #include "Input/Input.h"
 #include "Time/Clock.h"
 #include "Time/Stopwatch.h"
 #include "Time/Timer.h"
+#include "Audio/MusicPlayer.h"
 #include "Gui/Roboto-Regular.embed"
 #include <iostream>
 #include <sstream>
@@ -124,7 +126,7 @@ public:
             ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
             window_flags |= ImGuiWindowFlags_NoMove;
         }
-        ImGui::SetNextWindowBgAlpha(0.55f); // Transparent background
+        ImGui::SetNextWindowBgAlpha(0.90f); // Transparent background
 
         if (ImGui::Begin("Clock overlay", p_open, window_flags))
         {
@@ -228,6 +230,51 @@ private:
     taskhub::Timer m_Timer = taskhub::Timer();
 };
 
+
+
+class AudioDebug : public taskhub::Layer {
+public:
+    void OnAttach() override {
+       
+        m_MusicPlayer.Load("C:/Dev/Music/TheEnd.mp3");
+    }
+
+    void OnUIRender() override {
+        ImGui::Begin("Music Player");
+
+        if (ImGui::Button("Play Sample")) {
+            m_MusicPlayer.Play();
+        }
+        if (ImGui::Button("Pause")) {
+            m_MusicPlayer.Pause();
+        }
+        static float s_MusicVolume = 0.5f;
+        if (ImGui::SliderFloat("Volume", &s_MusicVolume, 0.0f, 1.0f, "%.2f")) {
+            m_MusicPlayer.SetVolume(s_MusicVolume);
+        }
+
+        static bool s_IsSeeking = false;
+        static float s_PlaybackPosition = 0.0f;
+        static float s_SongLength = m_MusicPlayer.GetSongLength();
+
+        if (!s_IsSeeking)
+            s_PlaybackPosition = m_MusicPlayer.GetCursorPosition();
+
+        if (ImGui::SliderFloat("##Seek", &s_PlaybackPosition, 0.0f, s_SongLength, "%.0f"))
+            s_IsSeeking = true;
+        if (s_IsSeeking && !ImGui::IsItemActive()) {
+            m_MusicPlayer.Seek(s_PlaybackPosition);
+            s_IsSeeking = false;
+        }
+
+        ImGui::End();
+    }
+
+private:
+
+    taskhub::MusicPlayer m_MusicPlayer;
+};
+
 taskhub::Application* taskhub::CreateApplication() {
 
 	taskhub::ApplicationProvision provision;
@@ -236,7 +283,9 @@ taskhub::Application* taskhub::CreateApplication() {
 
 	app->PushLayer<ImGuiTools>();
     app->PushLayer<ToDoList>();
-    app->PushLayer<TimeUtilTest>();
+    app->PushLayer<AudioDebug>();
 
 	return app;
 }
+
+
