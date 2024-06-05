@@ -13,7 +13,8 @@ project "TaskHub"
 
         "../Vendor/imgui",
         "../Vendor/glfw/include",
-        "../Vendor/spdlog/include"
+        "../Vendor/spdlog/include",
+        "../Vendor/miniaudio"
    }
 
    links
