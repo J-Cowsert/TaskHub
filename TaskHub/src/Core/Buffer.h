@@ -1,6 +1,7 @@
 #pragma once
 
-#include <memory>
+#include <cstdint>
+#include <vcruntime_string.h>
 
 namespace taskhub {
 
