@@ -5,7 +5,7 @@
 #include "Time/Clock.h"
 #include "Time/Stopwatch.h"
 #include "Time/Timer.h"
-#include "Audio/MusicPlayer.h"
+#include "Audio/AudioFile.h"
 #include "Gui/Roboto-Regular.embed"
 #include <iostream>
 #include <sstream>
@@ -231,48 +231,123 @@ private:
 };
 
 
-
-class AudioDebug : public taskhub::Layer {
+class AudioFileTest : public taskhub::Layer {
 public:
     void OnAttach() override {
-       
-        m_MusicPlayer.Load("C:/Dev/Music/TheEnd.mp3");
+
+        m_CoreEngine = std::make_shared<taskhub::HubAudioEngine>();
+        m_AudioFile = std::make_unique<taskhub::AudioFile>(m_CoreEngine, "C:/Dev/Music/Shift (Instrumental).mp3");
     }
 
     void OnUIRender() override {
-        ImGui::Begin("Music Player");
+        
+        ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
+        ImGui::Begin("Audio Player", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
 
-        if (ImGui::Button("Play Sample")) {
-            m_MusicPlayer.Play();
-        }
-        if (ImGui::Button("Pause")) {
-            m_MusicPlayer.Pause();
-        }
+        // Define a consistent color scheme
+        ImVec4 buttonColor = ImVec4(0.0f, 0.5f, 0.5f, 1.0f);
+        ImVec4 buttonHoverColor = ImVec4(0.0f, 0.7f, 0.7f, 1.0f);
+        ImVec4 buttonActiveColor = ImVec4(0.0f, 0.3f, 0.3f, 1.0f);
+        ImVec4 sliderBgColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
+        ImVec4 sliderGrabColor = ImVec4(0.0f, 0.5f, 0.5f, 1.0f);
+        ImVec4 textColor = ImVec4(0.9f, 0.9f, 0.9f, 1.0f);
+        ImVec4 headerColor = ImVec4(0.0f, 0.5f, 0.5f, 1.0f);
+
+        ImGui::PushStyleColor(ImGuiCol_Button, buttonColor);
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, buttonHoverColor);
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, buttonActiveColor);
+        ImGui::PushStyleColor(ImGuiCol_FrameBg, sliderBgColor);
+        ImGui::PushStyleColor(ImGuiCol_SliderGrab, sliderGrabColor);
+        ImGui::PushStyleColor(ImGuiCol_Text, textColor);
+
+        // Set default font size
+        ImGui::SetWindowFontScale(1.1f);
+
+        // Header
+        ImGui::TextColored(headerColor, "Audio Player");
+
+        // Add some vertical space
+        ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
+        // Volume Slider
         static float s_MusicVolume = 0.5f;
-        if (ImGui::SliderFloat("Volume", &s_MusicVolume, 0.0f, 1.0f, "%.2f")) {
-            m_MusicPlayer.SetVolume(s_MusicVolume);
+        ImGui::SameLine();
+        ImGui::VSliderFloat("##Volume", ImVec2(30, 160), &s_MusicVolume, 0.0f, 1.0f, "");
+        if (ImGui::IsItemActive() || ImGui::IsItemHovered()) {
+            ImGui::SetTooltip("%.2f", s_MusicVolume);
         }
+        m_CoreEngine->SetGlobalVolume(s_MusicVolume);
+        if (ImGui::IsItemHovered())
+            ImGui::SetTooltip("Volume");
 
+        ImGui::SameLine();
+
+        // Play/Pause Button
+        static bool isPlaying = false;
+        if (ImGui::Button(isPlaying ? "||" : ">", ImVec2(40, 40))) {
+            isPlaying = !isPlaying;
+            if (isPlaying) {
+                m_AudioFile->Play();
+            }
+            else {
+                m_AudioFile->Pause();
+            }
+        }
+        if (ImGui::IsItemHovered())
+            ImGui::SetTooltip("Play/Pause");
+
+        ImGui::SameLine();
+
+        // Loop Toggle Button
+        static bool isLooping = false;
+        if (ImGui::Button(isLooping ? "Looping: ON" : "Looping: OFF", ImVec2(120, 40))) {
+            isLooping = !isLooping;
+            m_AudioFile->SetLooping(isLooping);
+        }
+        if (ImGui::IsItemHovered())
+            ImGui::SetTooltip("Toggle Loop");
+
+        ImGui::SameLine();
+
+        // Add some vertical space
+        ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
+        // Seek Slider
         static bool s_IsSeeking = false;
         static float s_PlaybackPosition = 0.0f;
-        static float s_SongLength = m_MusicPlayer.GetSongLength();
+        float durationInSeconds = m_AudioFile->GetDuration().count();
 
         if (!s_IsSeeking)
-            s_PlaybackPosition = m_MusicPlayer.GetCursorPosition();
+            s_PlaybackPosition = m_AudioFile->GetCursorPosition();
 
-        if (ImGui::SliderFloat("##Seek", &s_PlaybackPosition, 0.0f, s_SongLength, "%.0f"))
+        // Format cursor position and duration in minutes and seconds
+        int currentMinutes = static_cast<int>(s_PlaybackPosition) / 60;
+        int currentSeconds = static_cast<int>(s_PlaybackPosition) % 60;
+        int totalMinutes = static_cast<int>(durationInSeconds) / 60;
+        int totalSeconds = static_cast<int>(durationInSeconds) % 60;
+
+        // Display the seek slider with current position and total duration
+        ImGui::Text("%02d:%02d / %02d:%02d", currentMinutes, currentSeconds, totalMinutes, totalSeconds);
+        if (ImGui::SliderFloat("##Seek", &s_PlaybackPosition, 0.0f, durationInSeconds, "")) {
             s_IsSeeking = true;
+        }
         if (s_IsSeeking && !ImGui::IsItemActive()) {
-            m_MusicPlayer.Seek(s_PlaybackPosition);
+            m_AudioFile->Seek(s_PlaybackPosition);
             s_IsSeeking = false;
         }
+        if (ImGui::IsItemHovered())
+            ImGui::SetTooltip("Seek");
+
+        // Restore the original styles
+        ImGui::PopStyleColor(6);
 
         ImGui::End();
     }
 
 private:
 
-    taskhub::MusicPlayer m_MusicPlayer;
+    std::shared_ptr<taskhub::HubAudioEngine> m_CoreEngine;
+    std::unique_ptr<taskhub::AudioFile> m_AudioFile;
 };
 
 taskhub::Application* taskhub::CreateApplication() {
@@ -283,9 +358,7 @@ taskhub::Application* taskhub::CreateApplication() {
 
 	app->PushLayer<ImGuiTools>();
     app->PushLayer<ToDoList>();
-    app->PushLayer<AudioDebug>();
+    app->PushLayer<AudioFileTest>();
 
 	return app;
 }
-
-
