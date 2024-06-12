@@ -25,8 +25,8 @@ namespace taskhub {
 		float GetCursorPosition();
 
 	public:
-		inline std::string& GetFilepath() { return m_Filepath; }
-		inline std::chrono::duration<float> GetDuration() { return m_Duration; }
+		inline std::string GetFilepath() const { return m_Filepath; }
+		inline std::chrono::duration<float> GetDuration() const { return m_Duration; }
 
 	private:
 		void Load();
