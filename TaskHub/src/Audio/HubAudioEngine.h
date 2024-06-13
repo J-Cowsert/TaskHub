@@ -10,7 +10,7 @@ namespace taskhub {
 		
 	public:
 		HubAudioEngine();
-		virtual ~HubAudioEngine() override;
+		~HubAudioEngine() override;
 
 		void SetGlobalVolume(float volume) override;
 		uint32_t GetSampleRate() override;

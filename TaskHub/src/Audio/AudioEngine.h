@@ -6,7 +6,7 @@ namespace taskhub {
 
 	class AudioEngine {
 	public:
-		virtual ~AudioEngine() {}
+		virtual ~AudioEngine() = default;
 
 		virtual void SetGlobalVolume(float volume) = 0;
 		virtual uint32_t GetSampleRate() = 0;
