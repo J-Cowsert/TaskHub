@@ -59,13 +59,21 @@ namespace taskhub {
 		ma_sound_set_looping(m_Sound.get(), isLooping);
 	}
 
-	float AudioFile::GetCursorPosition() {
+	float AudioFile::GetCursorPosition() const {
 
 		ma_result result;
-		float CursorPos;
-		result = ma_sound_get_cursor_in_seconds(m_Sound.get(), &CursorPos);
+		float cursorPos;
+		result = ma_sound_get_cursor_in_seconds(m_Sound.get(), &cursorPos);
 		HUB_ASSERT(result == MA_SUCCESS, "Sound failed to get cursor position");
 
-		return CursorPos;
+		return cursorPos;
+	}
+
+	bool AudioFile::IsPlaying() const {
+		return ma_sound_is_playing(m_Sound.get());
+	}
+
+	bool AudioFile::IsFinished() const {
+		return ma_sound_at_end(m_Sound.get());
 	}
 }

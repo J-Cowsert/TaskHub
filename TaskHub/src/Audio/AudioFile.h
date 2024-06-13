@@ -15,14 +15,17 @@ namespace taskhub {
 	public:
 		using Callback = std::function<void()>;
 
-		explicit AudioFile(std::shared_ptr<AudioEngine> engine, const std::string& filepath);
-		~AudioFile();
+		AudioFile(std::shared_ptr<AudioEngine> engine, const std::string& filepath);
+		~AudioFile();	
 		
 		void Play();
 		void Pause();
 		void Seek(float seconds);
 		void SetLooping(bool isLooping);
-		float GetCursorPosition();
+		float GetCursorPosition() const;
+
+		bool IsPlaying() const;
+		bool IsFinished() const;
 
 	public:
 		inline std::string GetFilepath() const { return m_Filepath; }
