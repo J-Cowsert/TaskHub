@@ -1,4 +1,5 @@
 #include "AudioFile.h"
+#include <iostream>
 
 namespace taskhub {
 
@@ -16,14 +17,12 @@ namespace taskhub {
 
 		ma_result result;
 		result = ma_sound_init_from_file((ma_engine*)m_Engine->GetContext(), m_Filepath.c_str(), 0, nullptr, nullptr, m_Sound.get());
-		if (result != MA_SUCCESS) {
-			HUB_CORE_WARN("sound failed to initaialize {0}", (char*)result);
-		}
+		HUB_CORE_ASSERT(result == MA_SUCCESS, "Failed to initialize sound");
 
 		// Calculate and store the duration
 		ma_uint64 frameCount;
 		result = ma_sound_get_length_in_pcm_frames(m_Sound.get(), &frameCount);
-		HUB_ASSERT(result == MA_SUCCESS, "Failed to get length of sound");
+		HUB_CORE_ASSERT(result == MA_SUCCESS, "Failed to get length of sound");
 
 		ma_uint32 sampleRate = m_Engine->GetSampleRate();
 		m_Duration = std::chrono::duration<float>(static_cast<float>(frameCount) / sampleRate);
@@ -33,19 +32,14 @@ namespace taskhub {
 
 		ma_result result;
 		result = ma_sound_start(m_Sound.get());
-		if (result != MA_SUCCESS) {
-			HUB_CORE_WARN("sound failed to initaialize {0}", (char*)result);
-		}
+		HUB_CORE_ASSERT(result == MA_SUCCESS, "Sound failed to start");
 	}
 
 	void AudioFile::Pause() {
 
 		ma_result result;
 		result = ma_sound_stop(m_Sound.get());
-
-		if (result != MA_SUCCESS) {
-			HUB_CORE_WARN("sound failed to pause {0}", (char*)result);
-		}
+		HUB_CORE_ASSERT(result == MA_SUCCESS, "Sound failed to stop");
 	}
 
 	void AudioFile::Seek(float seconds) {

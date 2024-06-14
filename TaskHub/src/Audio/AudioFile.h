@@ -1,11 +1,10 @@
 #pragma once
-
 #include "HubAudioEngine.h"
 #include "Core/Assert.h"
 #include "miniaudio.h"
 #include <functional>
 
-/* TODO: Refactor error catching in Audio.cpp 
+/* TODO: Need to think about runtime error catching 
 		 Implement callback for when sound is over
 */
 
