@@ -13,10 +13,10 @@ namespace taskhub {
 		~HubAudioEngine() override;
 
 		void SetGlobalVolume(float volume) override;
-		uint32_t GetSampleRate() override;
+		uint32_t GetSampleRate() const override;
 
 	private:
-		inline void* GetContext() override { return m_Engine.get(); }
+		inline void* GetContext() const override { return m_Engine.get(); }
 
 	private:
 		std::shared_ptr<ma_engine> m_Engine;	

@@ -7,12 +7,10 @@ namespace taskhub {
 		: m_Engine(std::make_shared<ma_engine>())
 	{
 		ma_result result = ma_engine_init(nullptr, m_Engine.get());
-		if (result != MA_SUCCESS)
-			HUB_CORE_WARN("Engine failed to initialize: {0}", (int)result);
+		HUB_CORE_ASSERT(result == MA_SUCCESS, "Engine failed to initialize");
 	}
 
 	HubAudioEngine::~HubAudioEngine() {
-		// Consider if the engine might deconstruct while an audio file is still using it.
 		ma_engine_uninit(m_Engine.get());
 	}
 
@@ -20,15 +18,10 @@ namespace taskhub {
 
 		ma_result result;
 		result = ma_engine_set_volume(m_Engine.get(), volume);
-		
-		if (result != MA_SUCCESS) {
-			HUB_CORE_WARN("engine failed to set volume {0}", (char*)result);
-		}
+		HUB_CORE_ASSERT(result == MA_SUCCESS, "Engine failed to set volume");
 	}
 
-	uint32_t HubAudioEngine::GetSampleRate() {
-
-		uint32_t sampleRate = ma_engine_get_sample_rate(m_Engine.get());
-		return sampleRate;
+	uint32_t HubAudioEngine::GetSampleRate() const {
+		return ma_engine_get_sample_rate(m_Engine.get());
 	}
 }

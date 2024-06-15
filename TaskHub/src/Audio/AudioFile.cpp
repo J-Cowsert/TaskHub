@@ -1,5 +1,4 @@
 #include "AudioFile.h"
-#include <iostream>
 
 namespace taskhub {
 
@@ -32,21 +31,21 @@ namespace taskhub {
 
 		ma_result result;
 		result = ma_sound_start(m_Sound.get());
-		HUB_CORE_ASSERT(result == MA_SUCCESS, "Sound failed to start");
+		HUB_CORE_ASSERT(result == MA_SUCCESS, "Failed to start sound");
 	}
 
 	void AudioFile::Pause() {
 
 		ma_result result;
 		result = ma_sound_stop(m_Sound.get());
-		HUB_CORE_ASSERT(result == MA_SUCCESS, "Sound failed to stop");
+		HUB_CORE_ASSERT(result == MA_SUCCESS, "Failed to stop sound");
 	}
 
 	void AudioFile::Seek(float seconds) {
 
 		ma_result result;
 		result = ma_sound_seek_to_pcm_frame(m_Sound.get(), static_cast<uint64_t>(seconds * m_Engine->GetSampleRate()));
-		HUB_ASSERT(result == MA_SUCCESS, "Sound failed to seek to pcm frame")
+		HUB_CORE_ASSERT(result == MA_SUCCESS, "Failed to seek to pcm frame")
 	}
 
 	void AudioFile::SetLooping(bool isLooping) {
@@ -58,7 +57,7 @@ namespace taskhub {
 		ma_result result;
 		float cursorPos;
 		result = ma_sound_get_cursor_in_seconds(m_Sound.get(), &cursorPos);
-		HUB_ASSERT(result == MA_SUCCESS, "Sound failed to get cursor position");
+		HUB_CORE_ASSERT(result == MA_SUCCESS, "Failed to get cursor position");
 
 		return cursorPos;
 	}
@@ -69,5 +68,9 @@ namespace taskhub {
 
 	bool AudioFile::IsFinished() const {
 		return ma_sound_at_end(m_Sound.get());
+	}
+
+	bool AudioFile::IsLooping() const {
+		return ma_sound_is_looping(m_Sound.get());
 	}
 }
