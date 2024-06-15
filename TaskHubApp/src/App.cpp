@@ -1,14 +1,8 @@
 #include "Core/Application.h"
-#include "Core/Assert.h"
 #include "Core/EntryPoint.h"
+#include "UI/UIUtils.h"
 #include "Input/Input.h"
-#include "Time/Clock.h"
-#include "Time/Stopwatch.h"
-#include "Time/Timer.h"
 #include "Audio/AudioFile.h"
-#include "Gui/Roboto-Regular.embed"
-#include <iostream>
-#include <sstream>
 
 class ImGuiTools : public taskhub::Layer {
 public:
@@ -87,156 +81,15 @@ public:
     }
 };
 
-static bool show_clock_overlay = true;
-static bool show_stopwatch = true;
-static bool show_timer = true;
-
-class TimeUtilTest : public taskhub::Layer {
-public:
-
-    void OnUIRender() override {
-        ShowClockOverlay(&show_clock_overlay);
-        ShowStopwatch(&show_stopwatch);
-        ShowTimer(&show_timer);
-    }
-
-    void ShowClockOverlay(bool* p_open)
-    {
-        static int location = -2; //Center
-        ImGuiIO& io = ImGui::GetIO();
-        ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
-        if (location >= 0)
-        {
-            const float PAD = 10.0f;
-            const ImGuiViewport* viewport = ImGui::GetMainViewport();
-            ImVec2 work_pos = viewport->WorkPos; // Use work area to avoid menu-bar/task-bar, if any!
-            ImVec2 work_size = viewport->WorkSize;
-            ImVec2 window_pos, window_pos_pivot;
-            window_pos.x = (location & 1) ? (work_pos.x + work_size.x - PAD) : (work_pos.x + PAD);
-            window_pos.y = (location & 2) ? (work_pos.y + work_size.y - PAD) : (work_pos.y + PAD);
-            window_pos_pivot.x = (location & 1) ? 1.0f : 0.0f;
-            window_pos_pivot.y = (location & 2) ? 1.0f : 0.0f;
-            ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
-            ImGui::SetNextWindowViewport(viewport->ID);
-            window_flags |= ImGuiWindowFlags_NoMove;
-        }
-        else if (location == -2)
-        {
-            // Center window
-            ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-            window_flags |= ImGuiWindowFlags_NoMove;
-        }
-        ImGui::SetNextWindowBgAlpha(0.90f); // Transparent background
-
-        if (ImGui::Begin("Clock overlay", p_open, window_flags))
-        {
-
-            ImGui::Text("Clock\n" "(right-click to change position)");
-            ImGui::Separator();
-
-            DisplayClockTime(m_Clock);
-            DisplayClockDate(m_Clock);
-
-            if (ImGui::BeginPopupContextWindow())
-            {
-                if (ImGui::MenuItem("Custom", NULL, location == -1)) location = -1;
-                if (ImGui::MenuItem("Center", NULL, location == -2)) location = -2;
-                if (ImGui::MenuItem("Top-left", NULL, location == 0)) location = 0;
-                if (ImGui::MenuItem("Top-right", NULL, location == 1)) location = 1;
-                if (ImGui::MenuItem("Bottom-left", NULL, location == 2)) location = 2;
-                if (ImGui::MenuItem("Bottom-right", NULL, location == 3)) location = 3;
-                if (p_open && ImGui::MenuItem("Close")) *p_open = false;
-                ImGui::EndPopup();
-            }
-
-        }
-
-        ImGui::End();
-    }
-
-    void ShowStopwatch(bool* p_open) {
-
-        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10)); // Increase button padding
-        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(10, 10)); // Increase button spacing
-
-        if (ImGui::Begin("Stopwatch", p_open)) {
-            if (ImGui::Button("Start"))
-                m_Stopwatch.Start();
-            ImGui::SameLine();
-            if (ImGui::Button("Stop"))
-                m_Stopwatch.Stop();
-            ImGui::SameLine();
-            if (ImGui::Button("Reset"))
-                m_Stopwatch.Reset();
-        }
-        ImGui::PopStyleVar(2);
-
-        float elapsedTime = m_Stopwatch.GetElapsedTime();
-        std::ostringstream oss;
-        oss << std::fixed << std::setprecision(2) << "Elapsed Time: " << elapsedTime << " seconds";
-        ImGui::Text("%s", oss.str().c_str());
-
-        ImGui::End();
-    }
-
-    void ShowTimer(bool* p_open) {
-
-        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10)); // Increase button padding
-        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(10, 10)); // Increase button spacing
-
-        static float time;
-        if (ImGui::Begin("Timer", p_open)) {
-            ImGui::InputFloat("##Time", &time, 0.1f, 1.0f);
-            if (ImGui::Button("Set Time")) {
-                m_Timer.SetTimer(time);
-            }  
-            ImGui::SameLine();
-            if (ImGui::Button("Reset Time")) {
-                m_Timer.Reset();
-            }
-            if (ImGui::Button("Start")) {
-                m_Timer.Start();
-            }
-            if (ImGui::Button("Pause")) {
-                m_Timer.Stop();
-            }
-        }
-
-        ImGui::PopStyleVar(2);
-
-        float remainingTime = m_Timer.GetRemainingTime();
-        std::ostringstream oss;
-        oss << std::fixed << std::setprecision(2) << "Remaining Time: " << remainingTime << " seconds";
-        ImGui::Text("%s", oss.str().c_str());
-
-        ImGui::End();
-    }
-
-private:
-    void DisplayClockTime(taskhub::Clock& clock) {
-      
-        std::string time = clock.GetTheTime();
-        ImGui::Text("Time: %s", time.c_str());
-    }
-    void DisplayClockDate(taskhub::Clock& clock) {
-        
-        std::string date = clock.GetTheDate();
-        ImGui::Text("Date: %s", date.c_str());
-    }
-
-private:
-    taskhub::Clock m_Clock = taskhub::Clock("America/Chicago");  
-    taskhub::Stopwatch m_Stopwatch = taskhub::Stopwatch();
-    taskhub::Timer m_Timer = taskhub::Timer();
-};
-
-
 class AudioFileTest : public taskhub::Layer {
 public:
     void OnAttach() override {
 
         m_CoreEngine = std::make_shared<taskhub::HubAudioEngine>();
-        m_AudioFile = std::make_unique<taskhub::AudioFile>(m_CoreEngine, "C:/Dev/Music/Shift (Instrumental).mp3");
+      
+        m_Playlist.emplace_back(std::make_shared<taskhub::AudioFile>(m_CoreEngine, "C:/Dev/Music/Shift (Instrumental).mp3"));
+        m_Playlist.emplace_back(std::make_shared<taskhub::AudioFile>(m_CoreEngine, "C:/Dev/Music/TheEnd.mp3"));
+        m_Playlist.emplace_back(std::make_shared<taskhub::AudioFile>(m_CoreEngine, "C:/Dev/Music/Nocturne.mp3"));
     }
 
     void OnUIRender() override {
@@ -263,35 +116,19 @@ public:
         // Set default font size
         ImGui::SetWindowFontScale(1.1f);
 
-        // Header
-        ImGui::TextColored(headerColor, "Audio Player");
-
         // Add some vertical space
         ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
-        // Volume Slider
-        static float s_MusicVolume = 0.5f;
-        ImGui::SameLine();
-        ImGui::VSliderFloat("##Volume", ImVec2(30, 160), &s_MusicVolume, 0.0f, 1.0f, "");
-        if (ImGui::IsItemActive() || ImGui::IsItemHovered()) {
-            ImGui::SetTooltip("%.2f", s_MusicVolume);
-        }
-        m_CoreEngine->SetGlobalVolume(s_MusicVolume);
-        if (ImGui::IsItemHovered())
-            ImGui::SetTooltip("Volume");
-
-        ImGui::SameLine();
-
         // Play/Pause Button
-        static bool isPlaying = false;
+        static bool isPlaying = m_Playlist[m_CurrentTrack]->IsPlaying();
         if (ImGui::Button(isPlaying ? "||" : ">", ImVec2(40, 40))) {
-            isPlaying = !isPlaying;
-            if (isPlaying) {
-                m_AudioFile->Play();
+            if (!isPlaying) {
+                m_Playlist[m_CurrentTrack]->Play();
             }
             else {
-                m_AudioFile->Pause();
+                m_Playlist[m_CurrentTrack]->Pause();
             }
+            isPlaying = !isPlaying;
         }
         if (ImGui::IsItemHovered())
             ImGui::SetTooltip("Play/Pause");
@@ -302,12 +139,24 @@ public:
         static bool isLooping = false;
         if (ImGui::Button(isLooping ? "Looping: ON" : "Looping: OFF", ImVec2(120, 40))) {
             isLooping = !isLooping;
-            m_AudioFile->SetLooping(isLooping);
+            m_Playlist[m_CurrentTrack]->SetLooping(isLooping);
         }
         if (ImGui::IsItemHovered())
             ImGui::SetTooltip("Toggle Loop");
 
         ImGui::SameLine();
+
+        // Volume Slider
+        static float s_MusicVolume = 0.5f;
+        ImGui::SameLine();
+        taskhub::UI::ShiftCursorX(100);
+        ImGui::VSliderFloat("##Volume", ImVec2(30, 160), &s_MusicVolume, 0.0f, 1.0f, "");
+        if (ImGui::IsItemActive() || ImGui::IsItemHovered()) {
+            ImGui::SetTooltip("%.2f", s_MusicVolume);
+        }
+        m_CoreEngine->SetGlobalVolume(s_MusicVolume);
+        if (ImGui::IsItemHovered())
+            ImGui::SetTooltip("Volume");
 
         // Add some vertical space
         ImGui::Dummy(ImVec2(0.0f, 10.0f));
@@ -315,10 +164,10 @@ public:
         // Seek Slider
         static bool s_IsSeeking = false;
         static float s_PlaybackPosition = 0.0f;
-        float durationInSeconds = m_AudioFile->GetDuration().count();
+        float durationInSeconds = m_Playlist[m_CurrentTrack]->GetDuration().count();
 
         if (!s_IsSeeking)
-            s_PlaybackPosition = m_AudioFile->GetCursorPosition();
+            s_PlaybackPosition = m_Playlist[m_CurrentTrack]->GetCursorPosition();
 
         // Format cursor position and duration in minutes and seconds
         int currentMinutes = static_cast<int>(s_PlaybackPosition) / 60;
@@ -332,22 +181,53 @@ public:
             s_IsSeeking = true;
         }
         if (s_IsSeeking && !ImGui::IsItemActive()) {
-            m_AudioFile->Seek(s_PlaybackPosition);
+            m_Playlist[m_CurrentTrack]->Seek(s_PlaybackPosition);
             s_IsSeeking = false;
         }
         if (ImGui::IsItemHovered())
             ImGui::SetTooltip("Seek");
 
-        // Restore the original styles
-        ImGui::PopStyleColor(6);
+        // Playlist Navigation
+        if (ImGui::Button("<", ImVec2(30, 30)) && m_CurrentTrack > 0) {
 
+            m_Playlist[m_CurrentTrack]->Pause();
+            m_Playlist[m_CurrentTrack]->Seek(0);
+            m_CurrentTrack--;
+
+            if (isPlaying) {
+                m_Playlist[m_CurrentTrack]->Play();
+            }
+        }
+        ImGui::SameLine();
+        if (ImGui::Button(">", ImVec2(30, 30)) && m_CurrentTrack < m_Playlist.size() - 1) {
+            m_Playlist[m_CurrentTrack]->Pause();
+            m_Playlist[m_CurrentTrack]->Seek(0);
+            m_CurrentTrack++;
+
+            if (isPlaying) {
+                m_Playlist[m_CurrentTrack]->Play();
+            }
+        }
+
+        if (m_Playlist[m_CurrentTrack]->IsFinished() && m_CurrentTrack < m_Playlist.size() - 1) {
+
+            m_Playlist[m_CurrentTrack++]->Seek(0);
+            if (isPlaying) {
+                m_Playlist[m_CurrentTrack]->Play();
+            }
+        }
+
+        ImGui::SameLine();
+        ImGui::Text("Track %d / %d", m_CurrentTrack + 1, m_Playlist.size());
+        ImGui::PopStyleColor(6);
         ImGui::End();
     }
 
 private:
-
     std::shared_ptr<taskhub::HubAudioEngine> m_CoreEngine;
-    std::unique_ptr<taskhub::AudioFile> m_AudioFile;
+
+    std::vector<std::shared_ptr<taskhub::AudioFile>> m_Playlist;
+    int m_CurrentTrack = 0;
 };
 
 taskhub::Application* taskhub::CreateApplication() {
@@ -356,7 +236,7 @@ taskhub::Application* taskhub::CreateApplication() {
 
 	taskhub::Application* app = new taskhub::Application(provision);
 
-	app->PushLayer<ImGuiTools>();
+	//app->PushLayer<ImGuiTools>();
     app->PushLayer<ToDoList>();
     app->PushLayer<AudioFileTest>();
 
