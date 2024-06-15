@@ -25,6 +25,7 @@ namespace taskhub {
 
 		bool IsPlaying() const;
 		bool IsFinished() const;
+		bool IsLooping() const;
 
 	public:
 		inline std::string GetFilepath() const { return m_Filepath; }
