@@ -1,9 +1,9 @@
 #include "Application.h"
-#include "Gui/ImGuiStyle.h"
+#include "UI/ImGuiStyle.h"
 #include <GLFW/glfw3.h>
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_glfw.h"
-#include "Gui/Roboto-Regular.embed"
+#include "UI/Embeds/Roboto-Regular.embed"
 #include <iostream>
 
 
