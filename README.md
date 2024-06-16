@@ -28,3 +28,11 @@ From there you can run the TaskHubApp project to see a basic example (Code is in
 
 ## License
 - UNLICENSE for this repository (see `UNLICENSE.txt` for more details)
+
+---
+
+## *Feedback*
+
+If you notice any issues or areas for improvement, please feel free to open an issue. I'm a college student eager for feedback and looking to improve. Your suggestions are greatly appreciated!
+
+---
