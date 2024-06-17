@@ -5,15 +5,18 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <filesystem>
 
 struct GLFWwindow;
 
 namespace taskhub {
 
 	struct ApplicationProvision {
+
 		std::string Name = "TaskHub";
 		uint32_t Width = 1600;
 		uint32_t Height = 900;
+		std::filesystem::path AppIconPath;
 	};
 
 	class Application {

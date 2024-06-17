@@ -1,9 +1,11 @@
 #include "Application.h"
+#include "Image.h"
 #include "UI/ImGuiStyle.h"
 #include <GLFW/glfw3.h>
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_glfw.h"
 #include "UI/Embeds/Roboto-Regular.embed"
+#include "stb_image.h"
 #include <iostream>
 
 
@@ -143,6 +145,18 @@ namespace taskhub {
 		glfwMakeContextCurrent(m_Window);
 		glfwSwapInterval(1); // Enable vsync
 
+		// Set app icon
+		GLFWimage icon;
+		int channels;
+		int desiredChannels = 4;
+		if (!m_AppProvision.AppIconPath.empty()) {
+
+			std::string pathString = m_AppProvision.AppIconPath.string();
+			icon.pixels = stbi_load(pathString.c_str(), &icon.width, &icon.height, &channels, desiredChannels);
+			glfwSetWindowIcon(m_Window, 1, &icon);
+			stbi_image_free(icon.pixels);
+		}
+
 		// ImGui initialization
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
@@ -166,6 +180,7 @@ namespace taskhub {
 		ImGui_ImplGlfw_InitForOpenGL(m_Window, true);
 		ImGui_ImplOpenGL3_Init("#version 410");
 
+		// Set default font
 		ImFontConfig fontConfig;
 		fontConfig.FontDataOwnedByAtlas = false;
 		ImFont* robotoFont = io.Fonts->AddFontFromMemoryTTF((void*)g_RobotoRegular, sizeof(g_RobotoRegular), 20.0f, &fontConfig);
