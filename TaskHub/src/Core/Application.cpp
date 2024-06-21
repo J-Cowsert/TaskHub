@@ -1,10 +1,11 @@
 #include "Application.h"
 #include "Image.h"
-#include "UI/ImGuiStyle.h"
+#include "GUI/ImGuiStyle.h"
 #include <GLFW/glfw3.h>
+#include "imgui_internal.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_glfw.h"
-#include "UI/Embeds/Roboto-Regular.embed"
+#include "GUI/Embeds/Roboto-Regular.embed"
 #include "stb_image.h"
 #include <iostream>
 
@@ -36,8 +37,8 @@ namespace taskhub {
 		ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 		ImGuiIO& io = ImGui::GetIO();
 
-		while (!glfwWindowShouldClose(m_Window) && m_Running)
-		{
+		while (!glfwWindowShouldClose(m_Window) && m_Running) {
+
 			// Poll and handle events (inputs, window resize, etc.)
 			// You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
 			// - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
@@ -81,16 +82,24 @@ namespace taskhub {
 				// We cannot preserve the docking relationship between an active window and an inactive docking, otherwise
 				// any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
 				ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-				ImGui::Begin("DockSpace Demo", nullptr, window_flags);
+				ImGui::Begin("DockSpace", nullptr, window_flags);
 				ImGui::PopStyleVar();
 			
 				ImGui::PopStyleVar(2);
 			
 				// Submit the DockSpace
-				if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
-				{
+				if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable) {
 					ImGuiID dockspace_id = ImGui::GetID("AppDockspace");
 					ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+				}
+
+				if (m_MenuBar) {
+
+					if (ImGui::BeginMainMenuBar()) {
+
+						m_MenuBar();
+						ImGui::EndMainMenuBar();
+					}
 				}
 			
 				for (auto& layer : m_LayerStack) {
@@ -107,8 +116,8 @@ namespace taskhub {
 			ImGui::Render();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-			{
+			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+
 				GLFWwindow* backup_current_context = glfwGetCurrentContext();
 				ImGui::UpdatePlatformWindows();
 				ImGui::RenderPlatformWindowsDefault();
@@ -117,13 +126,11 @@ namespace taskhub {
 		}
 	}
 
-	void Application::Close()
-	{
+	void Application::Close() {
 		m_Running = false;
 	}
 
-	Application& Application::Get()
-	{
+	Application& Application::Get() {
 		return *s_Instance;
 	}
 

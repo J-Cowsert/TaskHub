@@ -35,6 +35,8 @@ namespace taskhub {
 
 		void PushLayer(const std::shared_ptr<Layer>& layer) { m_LayerStack.emplace_back(layer); layer->OnAttach(); }
 
+		void SetMenubarCallback(const std::function<void()>& callback) { m_MenuBar = callback; }
+
 		static Application& Get();
 		GLFWwindow* GetWindow() const { return m_Window; }
 
@@ -48,6 +50,7 @@ namespace taskhub {
 		bool m_Running = true;
 
 		std::vector<std::shared_ptr<Layer>> m_LayerStack;
+		std::function<void()> m_MenuBar;
 	};
 
 	// To be defined in client app
