@@ -6,11 +6,11 @@
 namespace taskhub {
 
 	class HubAudioEngine : public AudioEngine {
-		friend class AudioFile;
+		friend class AudioTrack;
 		
 	public:
 		HubAudioEngine();
-		~HubAudioEngine() override;
+		virtual ~HubAudioEngine();
 
 		void SetGlobalVolume(float volume) override;
 		uint32_t GetSampleRate() const override;
