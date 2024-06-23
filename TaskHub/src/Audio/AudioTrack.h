@@ -20,7 +20,11 @@ namespace taskhub {
 	class AudioTrack {
 	public:
 		AudioTrack(std::shared_ptr<AudioEngine> engine, const std::string& filepath);
-		~AudioTrack();	
+		~AudioTrack();
+
+		// Delete copy constructor and copy assignment operator
+		AudioTrack(const AudioTrack&) = delete;
+		AudioTrack& operator=(const AudioTrack&) = delete;
 		
 		void Load();    // Loads the audio file into memory, preparing it for playback.
 		void Unload();  // Unloads the audio file from memory, releasing resources.
