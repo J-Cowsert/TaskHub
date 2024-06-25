@@ -1,7 +1,10 @@
 #include "Application.h"
+#include "Assert.h"
 #include "Image.h"
-#include "GUI/ImGuiStyle.h"
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <GL/GL.h>
+#include "GUI/ImGuiStyle.h"
 #include "imgui_internal.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_glfw.h"
@@ -150,6 +153,10 @@ namespace taskhub {
 			return;
 		}
 		glfwMakeContextCurrent(m_Window);
+
+		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+		HUB_CORE_ASSERT(status, "Failed to initalize glad");
+
 		glfwSwapInterval(1); // Enable vsync
 
 		// Set app icon
