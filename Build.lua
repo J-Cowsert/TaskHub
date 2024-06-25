@@ -18,6 +18,7 @@ group ""
 group "Dependencies"
    include "Vendor/imgui"
    include "Vendor/glfw"
+   include "Vendor/Glad"
    include "Vendor/miniaudio"
 group ""
 

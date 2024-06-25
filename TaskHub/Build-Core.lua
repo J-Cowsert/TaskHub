@@ -13,6 +13,7 @@ project "TaskHub"
 
         "../Vendor/imgui",
         "../Vendor/glfw/include",
+        "../Vendor/Glad/include",
         "../Vendor/spdlog/include",
         "../Vendor/miniaudio",
         "../Vendor/stb_image"
@@ -21,7 +22,8 @@ project "TaskHub"
    links
    {
         "ImGui",
-        "GLFW"
+        "GLFW",
+        "Glad"
    }
 
    targetdir ("../Binaries/" .. OutputDir .. "/%{prj.name}")
