@@ -1,6 +1,7 @@
 #pragma once
 #include "Log.h"
 #include "Layer.h"
+#include "Image.h"
 #include "imgui.h"
 #include <string>
 #include <vector>

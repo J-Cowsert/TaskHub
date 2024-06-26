@@ -1,8 +1,7 @@
 #include "Application.h"
 #include "Assert.h"
-#include "Image.h"
-#include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glad/glad.h>
 #include <GL/GL.h>
 #include "GUI/ImGuiStyle.h"
 #include "imgui_internal.h"
@@ -165,6 +164,7 @@ namespace taskhub {
 		int desiredChannels = 4;
 		if (!m_AppProvision.AppIconPath.empty()) {
 
+			HUB_CORE_ASSERT(std::filesystem::exists(m_AppProvision.AppIconPath), "Filepath does not exist");
 			std::string pathString = m_AppProvision.AppIconPath.string();
 			icon.pixels = stbi_load(pathString.c_str(), &icon.width, &icon.height, &channels, desiredChannels);
 			glfwSetWindowIcon(m_Window, 1, &icon);
@@ -178,6 +178,8 @@ namespace taskhub {
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+		//io.ConfigViewportsNoAutoMerge = true;
+		//io.ConfigViewportsNoTaskBarIcon = true;
 
 		// Setup Dear ImGui style
 		ImGui::StyleColorsDark();
