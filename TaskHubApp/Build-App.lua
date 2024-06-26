@@ -13,6 +13,7 @@ project "TaskHubApp"
 	  "../TaskHub/src",
       "../Vendor/imgui",
       "../Vendor/glfw/include",
+      "../Vendor/Glad/include",
       "../Vendor/spdlog/include",
       "../Vendor/miniaudio"
    }
