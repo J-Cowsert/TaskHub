@@ -10,7 +10,9 @@ class ImGuiTools : public taskhub::Layer {
 public:
 	void OnUIRender() override {
 		ImGui::ShowDemoWindow();
-		ImGui::ShowStyleEditor();
+        //ImGui::ShowMetricsWindow();
+        //ImGui::ShowIDStackToolWindow();
+		//ImGui::ShowStyleEditor();
 	}
 };
 
@@ -297,6 +299,9 @@ public:
         m_PlaylistManager->AddAudioFile("C:/Dev/Music/Shift (Instrumental).mp3");
         m_PlaylistManager->AddAudioFile("C:/Dev/Music/[dream].mp3");
         m_PlaylistManager->AddAudioFile("C:/Dev/Music/1 HOUR OF CHILL RAP BEATS.mp3");
+        m_PlaylistManager->AddAudioFile("C:/Dev/Music/Lofi Jazz Instrumental.mp3");
+        m_PlaylistManager->AddAudioFile("C:/Dev/Music/Nocturne.mp3");
+       
     }
 
     void OnUIRender() override {
@@ -328,6 +333,17 @@ public:
         ImGui::Text("size = %d x %d", m_HDRTestImage->GetWidth(), m_HDRTestImage->GetHeight());
         ImGui::Image((void*)(intptr_t)m_HDRTestImage->GetTextureID(), ImVec2(m_HDRTestImage->GetWidth() * 0.3, m_HDRTestImage->GetHeight() * 0.3));
         ImGui::End();
+
+        ImGui::Begin("ImageButtonTest");
+        ImGui::Text("pointer = %x", m_TestImage->GetTextureID());
+        ImGui::Text("size = %d x %d", m_TestImage->GetWidth(), m_TestImage->GetHeight());
+        if (ImGui::InvisibleButton("testbtn", ImVec2(100, 100))) {
+            HUB_CORE_INFO("Image Button Pressed");
+        }
+        
+        taskhub::UI::RenderImageButton(m_TestImage, IM_COL32(200, 200, 200, 255), IM_COL32(230, 230, 230, 255), IM_COL32(150, 150, 150, 255), ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
+        ImGui::End();
+        
     }
 
 private:
@@ -344,20 +360,19 @@ taskhub::Application* taskhub::CreateApplication() {
 	taskhub::Application* app = new taskhub::Application(provision);
 
 	app->PushLayer<ImGuiTools>();
-    app->PushLayer<ToDoList>();
+    //app->PushLayer<ToDoList>();
     app->PushLayer<AudioFileTest>();
     app->PushLayer<ImageTest>();
 
-    app->SetMenubarCallback([app]()
-	{
-		//if (ImGui::BeginMenu("File"))
-		//{
-			if (ImGui::MenuItem("Exit"))
-			{
+    app->SetMenubarCallback([app]() {
+
+		if (ImGui::BeginMenu("File")) {
+
+			if (ImGui::MenuItem("Exit")) {
 				app->Close();
 			}
-			//ImGui::EndMenu();
-		//}
+			ImGui::EndMenu();
+		}
 	});
 
 	return app;
