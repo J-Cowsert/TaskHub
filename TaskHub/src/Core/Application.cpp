@@ -95,10 +95,9 @@ namespace taskhub {
 					ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 				}
 
+				// MainMenuBar Callback
 				if (m_MenuBar) {
-
 					if (ImGui::BeginMainMenuBar()) {
-
 						m_MenuBar();
 						ImGui::EndMainMenuBar();
 					}
@@ -140,17 +139,18 @@ namespace taskhub {
 
 		glfwSetErrorCallback(glfw_error_callback);
 
-		if (!glfwInit()) { // TODO: Use Assert instead
+		if (!glfwInit()) {
 			HUB_CORE_ERROR("glfw failed to initialize");
 			return;
 		}
 
 		m_Window = glfwCreateWindow(m_AppProvision.Width, m_AppProvision.Height, m_AppProvision.Name.c_str(), nullptr, nullptr);
 		
-		if (m_Window == nullptr) { // TODO: Use Assert instead
+		if (m_Window == nullptr) {
 			HUB_CORE_ERROR("glfw failed to create window");
 			return;
 		}
+
 		glfwMakeContextCurrent(m_Window);
 
 		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
@@ -158,11 +158,12 @@ namespace taskhub {
 
 		glfwSwapInterval(1); // Enable vsync
 
-		// Set app icon
-		GLFWimage icon;
-		int channels;
-		int desiredChannels = 4;
+		// Set app icon if defined by user
 		if (!m_AppProvision.AppIconPath.empty()) {
+
+			GLFWimage icon;
+			int channels;
+			int desiredChannels = 4;
 
 			HUB_CORE_ASSERT(std::filesystem::exists(m_AppProvision.AppIconPath), "Filepath does not exist");
 			std::string pathString = m_AppProvision.AppIconPath.string();
@@ -178,8 +179,6 @@ namespace taskhub {
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
-		//io.ConfigViewportsNoAutoMerge = true;
-		//io.ConfigViewportsNoTaskBarIcon = true;
 
 		// Setup Dear ImGui style
 		ImGui::StyleColorsDark();
@@ -202,6 +201,7 @@ namespace taskhub {
 		ImFont* robotoFont = io.Fonts->AddFontFromMemoryTTF((void*)g_RobotoRegular, sizeof(g_RobotoRegular), 20.0f, &fontConfig);
 		io.FontDefault = robotoFont;
 
+		// Set default theme
 		UI::SetTaskHubTheme();
 	}
 
