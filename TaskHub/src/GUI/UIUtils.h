@@ -21,5 +21,8 @@ namespace taskhub::UI {
 	void RenderImageButton(const std::shared_ptr<taskhub::Image>& image,
 		                   ImU32 tint, ImU32 tintHovered, ImU32 tintPressed,
 		                   ImVec2 rectMin, ImVec2 rectMax);
+
+	void RenderImageButton(const std::shared_ptr<taskhub::Image>& image,
+		                   ImU32 tint, ImU32 tintHovered, ImU32 tintPressed);
 	
 }

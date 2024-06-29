@@ -39,7 +39,7 @@ namespace taskhub::UI {
 		                   ImU32 tint, ImU32 tintHovered, ImU32 tintPressed,
 		                   ImVec2 rectMin, ImVec2 rectMax) 
 	{
-		auto* drawList = ImGui::GetForegroundDrawList();
+		auto* drawList = ImGui::GetWindowDrawList();
 
 		if (ImGui::IsItemActive())
 			drawList->AddImage((void*)(intptr_t)imagePressed->GetTextureID(), rectMin, rectMax, ImVec2(0, 0), ImVec2(1, 1), tintPressed);
@@ -54,5 +54,11 @@ namespace taskhub::UI {
 		                   ImVec2 rectMin, ImVec2 rectMax) 
 	{
 		RenderImageButton(image, image, image, tint, tintHovered, tintPressed, rectMin, rectMax);
+	}
+
+	void RenderImageButton(const std::shared_ptr<taskhub::Image>& image,
+		                   ImU32 tint, ImU32 tintHovered, ImU32 tintPressed)
+	{
+		RenderImageButton(image, image, image, tint, tintHovered, tintPressed, ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
 	}
 }
