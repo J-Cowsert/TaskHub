@@ -1,24 +1,29 @@
 #pragma once
-#include "AudioEngine.h"
+#include "HubAudioEngine.h"
 #include "miniaudio.h"
 #include <memory>
 
 namespace taskhub {
 
-	class HubAudioEngine : public AudioEngine {
-		friend class AudioTrack;
-		
+	class HubAudioEngine {
 	public:
+		~HubAudioEngine();
+
+		HubAudioEngine(HubAudioEngine& other) = delete;
+		void operator=(const HubAudioEngine&) = delete;
+
+		void SetGlobalVolume(float volume);
+		uint32_t GetSampleRate() const;
+
+		static HubAudioEngine* GetInstance();
+		ma_engine* GetEngineHandle() const { return m_EngineHandle.get(); }
+
+	private:
 		HubAudioEngine();
-		virtual ~HubAudioEngine();
-
-		void SetGlobalVolume(float volume) override;
-		uint32_t GetSampleRate() const override;
 
 	private:
-		inline void* GetContext() const override { return m_Engine.get(); }
+		static HubAudioEngine* s_Instance;
 
-	private:
-		std::shared_ptr<ma_engine> m_Engine;	
+		std::unique_ptr<ma_engine> m_EngineHandle;	
 	};
 }
