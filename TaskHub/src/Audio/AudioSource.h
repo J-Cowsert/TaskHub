@@ -8,10 +8,7 @@
 /*
 	AudioSource offers a straightforward and easy-to-use interface for handling audio playback. 
 	It is designed to simplify the process of managing audio files, allowing you to load, play, pause, and control tracks with minimal effort.
-
-	TODO:
 */
-
 namespace taskhub {
 
 	class AudioSource {
@@ -37,7 +34,7 @@ namespace taskhub {
 		bool IsLoaded() const { return m_IsLoaded; }  // Checks if the audio track is loaded into memory.
 
 	private:
-		std::unique_ptr<ma_sound> m_Sound;
+		std::unique_ptr<ma_sound> m_SoundHandle;
 
 		bool m_IsLoaded = false;
 	};
