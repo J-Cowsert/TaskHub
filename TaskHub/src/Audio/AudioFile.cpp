@@ -1,5 +1,5 @@
 #include "AudioFile.h"
-#include "HubAudioEngine.h"
+#include "AudioEngine.h"
 #include "Core/Assert.h"
 #include <filesystem>
 
@@ -39,7 +39,7 @@ namespace taskhub {
 		ma_result result = ma_decoder_get_length_in_pcm_frames(m_DecoderHandle.get(), &frameCount);
 		HUB_CORE_ASSERT(result == MA_SUCCESS, "Failed to get length of sound");
 
-		ma_uint32 sampleRate = HubAudioEngine::GetInstance()->GetSampleRate();
+		ma_uint32 sampleRate = AudioEngine::GetInstance()->GetSampleRate();
 		m_Duration = std::chrono::duration<float>(static_cast<float>(frameCount) / sampleRate);
 	}
 

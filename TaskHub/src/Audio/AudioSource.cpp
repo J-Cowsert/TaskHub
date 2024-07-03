@@ -1,5 +1,6 @@
 #include "AudioSource.h"
-#include <filesystem>
+#include "AudioEngine.h"
+#include "Core/Assert.h"
 
 namespace taskhub {
 
@@ -18,7 +19,7 @@ namespace taskhub {
 		Unload();
 
 		ma_result result;
-		result = ma_sound_init_from_data_source(HubAudioEngine::GetInstance()->GetEngineHandle(), audioFile.GetDecoder(), MA_SOUND_FLAG_ASYNC, nullptr, m_SoundHandle.get());
+		result = ma_sound_init_from_data_source(AudioEngine::GetInstance()->GetEngineHandle(), audioFile.GetDecoder(), MA_SOUND_FLAG_ASYNC, nullptr, m_SoundHandle.get());
 		HUB_CORE_ASSERT(result == MA_SUCCESS, "Failed to initialize sound");
 
 		m_IsLoaded = true;
@@ -50,7 +51,7 @@ namespace taskhub {
 	void AudioSource::Seek(float seconds) {
 
 		ma_result result;
-		result = ma_sound_seek_to_pcm_frame(m_SoundHandle.get(), static_cast<uint64_t>(seconds * HubAudioEngine::GetInstance()->GetSampleRate()));
+		result = ma_sound_seek_to_pcm_frame(m_SoundHandle.get(), static_cast<uint64_t>(seconds * AudioEngine::GetInstance()->GetSampleRate()));
 		HUB_CORE_ASSERT(result == MA_SUCCESS, "Failed to seek to pcm frame")
 	}
 

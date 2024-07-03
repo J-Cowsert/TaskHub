@@ -1,9 +1,6 @@
 #pragma once
-#include "HubAudioEngine.h"
 #include "AudioFile.h"
-#include "Core/Assert.h"
 #include "miniaudio.h"
-#include <functional>
 
 /*
 	AudioSource offers a straightforward and easy-to-use interface for handling audio playback. 
