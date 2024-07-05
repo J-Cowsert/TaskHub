@@ -30,7 +30,7 @@ namespace taskhub::UI {
 		float availHeight = ImGui::GetContentRegionAvail().y;
 		float offsetY = (availHeight - height) * alignment;
 		if (offsetY > 0.0f)
-			ImGui::SetCursorPosX(ImGui::GetCursorPosY() + offsetY);
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + offsetY);
 	}
 
 	void RenderImageButton(const std::shared_ptr<taskhub::Image>& image, 
