@@ -21,9 +21,12 @@ namespace taskhub {
 
 		void Play();
 		void Pause();
-		void Seek(float seconds);  // Seeks to the specified position in the audio track.
 		void SetLooping(bool isLooping);
+		void SetCursorPosition(float seconds);  // Seeks to a specified position in the audio track.
+		void SetVolume(float volume);
+
 		float GetCursorPosition() const;
+		float GetVolume() const;
 
 		bool IsPlaying() const;
 		bool IsFinished() const;
