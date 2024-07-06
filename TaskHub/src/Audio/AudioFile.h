@@ -37,7 +37,7 @@ namespace taskhub {
 		
 	private:
 		std::string m_Filepath;
-		std::string m_Name = "";
+		std::string m_Name;
 		std::chrono::duration<float> m_Duration;
 		FileExtension m_FileExtension = FileExtension::None;
 
