@@ -1,16 +1,13 @@
 #include "Application.h"
+#include "Log.h"
 #include "Assert.h"
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
-#include <GL/GL.h>
 #include "GUI/ImGuiStyle.h"
-#include "imgui_internal.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_glfw.h"
 #include "GUI/Embeds/Roboto-Regular.embed"
 #include "stb_image.h"
-#include <iostream>
-
 
 static taskhub::Application* s_Instance = nullptr;
 
@@ -47,7 +44,7 @@ namespace taskhub {
 			// - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
 			// Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
 			glfwPollEvents();
-
+		
 			for (auto& layer : m_LayerStack) {
 				layer->OnUpdate();
 			}
@@ -110,7 +107,7 @@ namespace taskhub {
 				ImGui::End();
 			}
 
-			std::this_thread::sleep_for(std::chrono::milliseconds(5));
+			std::this_thread::sleep_for(std::chrono::milliseconds(6));
 
 			// Rendering
 			glfwSwapBuffers(m_Window);
@@ -140,21 +137,25 @@ namespace taskhub {
 		glfwSetErrorCallback(glfw_error_callback);
 
 		if (!glfwInit()) {
-			HUB_CORE_ERROR("glfw failed to initialize");
+			HUB_CORE_ERROR("Failed to initialize glfw");
 			return;
 		}
 
 		m_Window = glfwCreateWindow(m_AppProvision.Width, m_AppProvision.Height, m_AppProvision.Name.c_str(), nullptr, nullptr);
 		
-		if (m_Window == nullptr) {
-			HUB_CORE_ERROR("glfw failed to create window");
+		if (!m_Window) {
+			HUB_CORE_ERROR("Failed to create window");
 			return;
 		}
 
 		glfwMakeContextCurrent(m_Window);
 
 		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-		HUB_CORE_ASSERT(status, "Failed to initalize glad");
+
+		if (!status) {
+			HUB_CORE_ERROR("Failed to initalize glad");
+			return;
+		}
 
 		glfwSwapInterval(1); // Enable vsync
 
@@ -179,9 +180,6 @@ namespace taskhub {
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
-
-		// Setup Dear ImGui style
-		ImGui::StyleColorsDark();
 
 		// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
 		ImGuiStyle& style = ImGui::GetStyle();
