@@ -1,5 +1,4 @@
 #include "AudioFile.h"
-#include "AudioEngine.h"
 #include "Core/Assert.h"
 #include <filesystem>
 
@@ -34,13 +33,18 @@ namespace taskhub {
 	}
 
 	void AudioFile::SetDuration() {
-	
-		ma_uint64 frameCount;
-		ma_result result = ma_decoder_get_length_in_pcm_frames(m_DecoderHandle.get(), &frameCount);
-		HUB_CORE_ASSERT(result == MA_SUCCESS, "Failed to get length of sound");
 
-		ma_uint32 sampleRate = AudioEngine::GetInstance()->GetSampleRate();
-		m_Duration = std::chrono::duration<float>(static_cast<float>(frameCount) / sampleRate);
+		ma_result result;
+		ma_uint64 frameCount;
+		ma_uint32 sampleRate;
+
+		result = ma_decoder_get_available_frames(m_DecoderHandle.get(), &frameCount);
+		HUB_CORE_ASSERT(result == MA_SUCCESS, "Failed to get frame count");
+
+		result = ma_data_source_get_data_format(m_DecoderHandle.get(), nullptr, nullptr, &sampleRate, nullptr, 0);
+		HUB_CORE_ASSERT(result == MA_SUCCESS, "Failed to get sample rate");
+
+		m_Duration = std::chrono::duration<float>((ma_uint64)frameCount / (float)sampleRate);
 	}
 
 	void AudioFile::SetFileExtension() {
