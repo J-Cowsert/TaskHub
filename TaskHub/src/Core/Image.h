@@ -30,7 +30,6 @@ namespace taskhub {
 		void ReleaseMemory();
 
 	private:
-
 		uint32_t m_Width = 0, m_Height = 0;
 		GLuint m_TextureID = 0;
 		std::string m_FilePath;

@@ -43,16 +43,14 @@ namespace taskhub {
 			
 			data = (uint8_t*)stbi_loadf(m_FilePath.c_str(), &width, &height, &channels, 4);
 			m_ImageFormat = ImageFormat::RGBA32F;
-			HUB_CORE_INFO("HDR Image loaded");
 		}
 		else {
 			data = stbi_load(m_FilePath.c_str(), &width, &height, &channels, 4);
 			m_ImageFormat = ImageFormat::RGBA;
-			HUB_CORE_INFO("Image loaded");
 		}
 
-		if (data == nullptr)
-			HUB_CORE_CRITICAL("Image data is null");
+		if (!data)
+			HUB_CORE_CRITICAL("Failed to load image data");
 
 		m_Width = width;
 		m_Height = height;
