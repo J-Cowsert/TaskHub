@@ -14,9 +14,7 @@ namespace taskhub {
 		SetName();
 		SetDuration();
 		SetFileExtension();
-	}
 
-	AudioFile::~AudioFile() {
 		ma_decoder_uninit(m_DecoderHandle.get());
 	}
 
@@ -29,7 +27,7 @@ namespace taskhub {
 	void AudioFile::SetName() {
 
 		std::filesystem::path path(m_Filepath);
-		m_Name = path.filename().string();
+		m_Name = path.stem().string();
 	}
 
 	void AudioFile::SetDuration() {

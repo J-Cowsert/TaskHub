@@ -16,7 +16,7 @@ namespace taskhub {
 	class AudioFile {
 	public:
 		AudioFile(const std::string& filepath);
-		~AudioFile();
+		~AudioFile() = default;
 
 		AudioFile(const AudioFile&) = delete;
 		AudioFile& operator=(const AudioFile&) = delete;
@@ -25,8 +25,6 @@ namespace taskhub {
 		const std::string& GetName() const { return m_Name; }
 		const std::chrono::duration<float>& GetDuration() const { return m_Duration; }
 		const FileExtension& GetFileExtension() const { return m_FileExtension; }
-
-		ma_decoder* GetDecoder() const { return m_DecoderHandle.get(); }	
 
 	private:
 		void InitDecoder();
