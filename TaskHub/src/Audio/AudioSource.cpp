@@ -10,8 +10,7 @@ namespace taskhub {
 	}
 
 	AudioSource::~AudioSource() {
-		if (m_IsLoaded)
-			ma_sound_uninit(m_SoundHandle.get());
+		Unload(); 
 	}
 
 	void AudioSource::Load(AudioFile& audioFile) {
@@ -19,9 +18,8 @@ namespace taskhub {
 		Unload();
 
 		ma_result result;
-		result = ma_sound_init_from_data_source(AudioEngine::GetInstance()->GetEngineHandle(), audioFile.GetDecoder(), MA_SOUND_FLAG_ASYNC, nullptr, m_SoundHandle.get());
+		result = ma_sound_init_from_file(AudioEngine::GetInstance()->GetEngineHandle(), audioFile.GetFilepath().c_str(), MA_SOUND_FLAG_ASYNC, nullptr, nullptr, m_SoundHandle.get());
 		HUB_CORE_ASSERT(result == MA_SUCCESS, "Failed to initialize sound");
-
 		m_IsLoaded = true;
 	}
 
@@ -35,21 +33,26 @@ namespace taskhub {
 
 	void AudioSource::Play() {
 
+		HUB_CORE_ASSERT(m_IsLoaded, "Sound is not loaded");
 		ma_result result;
 		result = ma_sound_start(m_SoundHandle.get());
 		HUB_CORE_ASSERT(result == MA_SUCCESS, "Failed to start sound");
 	}
-
 	void AudioSource::Pause() {
 
+		HUB_CORE_ASSERT(m_IsLoaded, "Sound is not loaded");
 		ma_result result;
-		
 		result = ma_sound_stop(m_SoundHandle.get());
 		HUB_CORE_ASSERT(result == MA_SUCCESS, "Failed to stop sound");
 	}
 
-	void AudioSource::Seek(float seconds) {
+	void AudioSource::SetVolume(float volume) {
+		ma_sound_set_volume(m_SoundHandle.get(), volume);
+	}
 
+	void AudioSource::SetCursorPosition(float seconds) {
+
+		HUB_CORE_ASSERT(m_IsLoaded, "Sound is not loaded");
 		ma_result result;
 		result = ma_sound_seek_to_pcm_frame(m_SoundHandle.get(), static_cast<uint64_t>(seconds * AudioEngine::GetInstance()->GetSampleRate()));
 		HUB_CORE_ASSERT(result == MA_SUCCESS, "Failed to seek to pcm frame")
@@ -61,12 +64,17 @@ namespace taskhub {
 
 	float AudioSource::GetCursorPosition() const {
 
+		HUB_CORE_ASSERT(m_IsLoaded, "Sound is not loaded");
 		ma_result result;
 		float cursorPos;
 		result = ma_sound_get_cursor_in_seconds(m_SoundHandle.get(), &cursorPos);
 		HUB_CORE_ASSERT(result == MA_SUCCESS, "Failed to get cursor position");
 
 		return cursorPos;
+	}
+
+	float AudioSource::GetVolume() const {
+		return ma_sound_get_volume(m_SoundHandle.get());
 	}
 
 	bool AudioSource::IsPlaying() const {
