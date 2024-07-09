@@ -5,7 +5,7 @@ TaskHub is a C++ framework designed to simplify the development of task-related 
 ## Features
 - **Modular Architecture:** Easily extend and customize the framework to suit your needs.
 - **ImGui Integration:** Quickly create interactive and user-friendly interfaces.
-- **Audio Support:** Manage and play audio files seamlessly with miniaudio.
+- **Audio Support:** Manage and play audio files with miniaudio.
 
 ## Build
 TaskHub builds into a static library and TaskHubApp builds into an executable and links the core static library. The `Scripts/` directory contains setup script for Windows (Currently only supports Visual Studio).
@@ -30,7 +30,7 @@ From there you can run the TaskHubApp project to see a basic example (Code is in
 
 ## *Feedback*
 
-If you notice any issues or areas for improvement, please feel free to open an issue. I'm a college student eager for feedback and looking to improve. Your suggestions are greatly appreciated!
+If you notice any issues or areas for improvement, please feel free to open an issue. I'm eager for feedback and looking to improve. Your suggestions are greatly appreciated!
 
 ---
 
