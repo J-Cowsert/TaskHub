@@ -103,7 +103,7 @@ namespace taskhub {
 		uint8_t* data = nullptr;
 		uint64_t size = 0;
 
-		data = stbi_load_from_memory((const stbi_uc*)buffer, length, &width, &height, &channels, 4);
+		data = stbi_load_from_memory((const stbi_uc*)buffer, static_cast<int>(length), &width, &height, &channels, 4);
 		size = width * height * 4;
 
 		outWidth = width;
