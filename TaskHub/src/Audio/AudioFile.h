@@ -26,6 +26,8 @@ namespace taskhub {
 		const std::chrono::duration<float>& GetDuration() const { return m_Duration; }
 		const FileExtension& GetFileExtension() const { return m_FileExtension; }
 
+		static bool IsFileValid(const std::string& filepath);
+
 	private:
 		void InitDecoder();
 

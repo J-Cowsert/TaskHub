@@ -8,14 +8,25 @@ namespace taskhub {
 		: m_Filepath(filepath), m_DecoderHandle(std::make_unique<ma_decoder>())
 	{
 		HUB_CORE_ASSERT(std::filesystem::exists(m_Filepath), "Filepath does not exist");
-
-		InitDecoder();
-
-		SetName();
-		SetDuration();
+		
 		SetFileExtension();
 
+		SetName();
+		InitDecoder();
+		SetDuration();
+
 		ma_decoder_uninit(m_DecoderHandle.get());
+	}
+
+	bool AudioFile::IsFileValid(const std::string& filepath) {
+
+		std::filesystem::path path(filepath);
+		std::string extension = path.extension().string();
+		if (extension == ".wav" || extension == ".mp3" || extension == ".flac") {
+			return true;
+		}
+
+		return false;
 	}
 
 	void AudioFile::InitDecoder() {
@@ -46,7 +57,7 @@ namespace taskhub {
 	}
 
 	void AudioFile::SetFileExtension() {
-
+		
 		std::filesystem::path path(m_Filepath);
 		std::string extension = path.extension().string();
 
@@ -61,8 +72,10 @@ namespace taskhub {
 		else if (extension == ".flac") {
 			m_FileExtension = FileExtension::FLAC;
 			return;
+		} 
+		else {
+			HUB_CORE_ASSERT(false, "File type not supported. Be sure to check if the file is valid with the IsFileValid method!");
 		}
 
-		HUB_CORE_ERROR("File type not supported");
 	}
 }
