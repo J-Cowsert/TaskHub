@@ -6,7 +6,7 @@
 
 namespace taskhub {
 
-    class WindowsFileDialog : FileDialog {
+    class WindowsFileDialog : public FileDialog {
     public:
         WindowsFileDialog() = default;
         virtual ~WindowsFileDialog() = default;

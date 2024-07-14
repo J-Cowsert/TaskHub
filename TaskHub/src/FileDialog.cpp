@@ -1,4 +1,5 @@
 #include "FileDialog.h"
+#include "Core/Assert.h"
 
 #ifdef HUB_PLATFORM_WINDOWS
     #include "Platform/Windows/WindowsFileDialog.h"
@@ -9,11 +10,11 @@ namespace taskhub {
 
     std::unique_ptr<FileDialog> FileDialog::Create() {
 
-        #ifdef HUB_PLATFORM_WINDOWS
-
-            return std::make_unique<WindowsFileDialog>();
-        #endif //HUB_PLATFORM_WINDOWS 
-
-        return std::unique_ptr<FileDialog>();
+    #ifdef HUB_PLATFORM_WINDOWS
+        return std::make_unique<WindowsFileDialog>();
+    #else
+        HUB_CORE_ASSERT(false, "Platform unknown.");
+        return nullptr;
+    #endif
     }
 }
