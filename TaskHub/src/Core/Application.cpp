@@ -6,7 +6,7 @@
 #include "GUI/ImGuiStyle.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_glfw.h"
-#include "GUI/Embeds/Roboto-Regular.embed"
+#include "GUI/Embeds/Fonts/Roboto-Regular.embed"
 #include "stb_image.h"
 
 static taskhub::Application* s_Instance = nullptr;
@@ -59,7 +59,8 @@ namespace taskhub {
 				// We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
 				// because it would be confusing to have two docking targets within each others.
 				ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
-				
+				if (m_MenuBar)
+					window_flags |= ImGuiWindowFlags_MenuBar;
 			
 				const ImGuiViewport* viewport = ImGui::GetMainViewport();
 				ImGui::SetNextWindowPos(viewport->WorkPos);
@@ -92,11 +93,11 @@ namespace taskhub {
 					ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 				}
 
-				// MainMenuBar Callback
+				// MenuBar Callback
 				if (m_MenuBar) {
-					if (ImGui::BeginMainMenuBar()) {
+					if (ImGui::BeginMenuBar()) {
 						m_MenuBar();
-						ImGui::EndMainMenuBar();
+						ImGui::EndMenuBar();
 					}
 				}
 			
@@ -200,7 +201,7 @@ namespace taskhub {
 		io.FontDefault = robotoFont;
 
 		// Set default theme
-		UI::SetTaskHubTheme();
+		UI::SetTaskHubStyle();
 	}
 
 	void Application::Shutdown() {
