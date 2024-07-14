@@ -2,7 +2,7 @@
 
 namespace taskhub::UI {
 
-	void SetTaskHubTheme() {
+	void SetTaskHubStyle() {
 
          ImVec4* colors = ImGui::GetStyle().Colors;
 

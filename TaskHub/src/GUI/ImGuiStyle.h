@@ -3,5 +3,5 @@
 
 namespace taskhub::UI {
 
-	void SetTaskHubTheme();
+	void SetTaskHubStyle();
 }
