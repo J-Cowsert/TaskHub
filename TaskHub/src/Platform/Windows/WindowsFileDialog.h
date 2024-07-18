@@ -12,5 +12,7 @@ namespace taskhub {
         virtual ~WindowsFileDialog() = default;
 
         std::string OpenFile() override;
+        
+        std::string OpenFolder() override;
     };
 }
