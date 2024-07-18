@@ -4,11 +4,11 @@
 
 #ifdef HUB_PLATFORM_WINDOWS
 #else
-	#error taskhub currently only supports Windows
+#error taskhub currently only supports Windows
 #endif // HUB_PLATFORM_WINDOWS
 
 #ifdef HUB_DEBUG
-	#define HUB_ENABLE_ASSERTS
+#define HUB_ENABLE_ASSERTS
 #endif // HUB_DEBUG
 
 #ifdef HUB_ENABLE_ASSERTS
@@ -18,4 +18,3 @@
 	#define HUB_ASSERT(x, ...)
 	#define HUB_CORE_ASSERT(x, ...)
 #endif // HUB_ENABLE_ASSERTS
-
