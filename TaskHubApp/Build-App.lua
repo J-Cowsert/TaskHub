@@ -9,7 +9,7 @@ project "TaskHubApp"
 
    includedirs
    {
-      "src",
+      "../TaskHubApp/src",
 	  "../TaskHub/src",
       "../Vendor/imgui",
       "../Vendor/glfw/include",
