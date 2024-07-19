@@ -1,11 +1,11 @@
 #include "Core/Application.h"
 #include "Core/EntryPoint.h"
+#include "resources.embed"
 #include "Core/Image.h"
 #include "Audio/AudioSource.h"
 #include "Audio/AudioFile.h"
 #include "GUI/UIUtils.h"
 #include "FileDialog.h"
-#include "Input/Input.h"
 #include <chrono>
 #include <format>
 
@@ -14,26 +14,57 @@ class AudioPlayer : public taskhub::Layer {
 public:
     void OnAttach() override {
 
-        // TODO: Encode these as byte arrays so TaskHubApp can be run on other machines
-        m_PlayImageButton = std::make_shared<taskhub::Image>("C:/Dev/Resources/Images/Audio/Play.png");
-        m_PauseImageButton = std::make_shared<taskhub::Image>("C:/Dev/Resources/Images/Audio/Pause.png");
-        m_ForwardImageButton = std::make_shared<taskhub::Image>("C:/Dev/Resources/Images/Audio/Forward.png");
-        m_BackwardImageButton = std::make_shared<taskhub::Image>("C:/Dev/Resources/Images/Audio/Backward.png");
-        m_VolumeImageButton = std::make_shared<taskhub::Image>("C:/Dev/Resources/Images/Audio/Volume.png");
-        m_VolumeMuteImageButton = std::make_shared<taskhub::Image>("C:/Dev/Resources/Images/Audio/mute.png");
-        m_LoopingOffImageButton = std::make_shared<taskhub::Image>("C:/Dev/Resources/Images/Audio/loopOff.png");
-        m_LoopingOnImageButton = std::make_shared<taskhub::Image>("C:/Dev/Resources/Images/Audio/loopOn.png");
+        m_AudioPlayer = std::make_unique<taskhub::AudioSource>();
+        m_FileDialog = taskhub::FileDialog::Create();
+        m_DisplayFlag = std::make_unique<bool>(false);
+
+        {            
+            // The following code decodes images from byte arrays, eliminating the need to include 
+            // PNG files directly in the repository. Below I've provided an example of loading an 
+            // image directly from a file.
+            // m_PlayImageButton = std::make_shared<taskhub::Image>("C:/Dev/Resources/Images/Audio/Play.png");
+            
+            uint32_t width, height;
+            void* data;
+
+            data = taskhub::Image::DecodeFromMemory(playImage, sizeof(playImage), width, height);
+            m_PlayImageButton = std::make_shared<taskhub::Image>(width, height, taskhub::ImageFormat::RGBA, data);
+            free(data);
+
+            data = taskhub::Image::DecodeFromMemory(pauseImage, sizeof(pauseImage), width, height);
+            m_PauseImageButton = std::make_shared<taskhub::Image>(width, height, taskhub::ImageFormat::RGBA, data);
+            free(data);
+
+            data = taskhub::Image::DecodeFromMemory(forwardImage, sizeof(forwardImage), width, height);
+            m_ForwardImageButton = std::make_shared<taskhub::Image>(width, height, taskhub::ImageFormat::RGBA, data);
+            free(data);
+
+            data = taskhub::Image::DecodeFromMemory(backwardImage, sizeof(backwardImage), width, height);
+            m_BackwardImageButton = std::make_shared<taskhub::Image>(width, height, taskhub::ImageFormat::RGBA, data);
+            free(data);
+
+            data = taskhub::Image::DecodeFromMemory(volumeImage, sizeof(volumeImage), width, height);
+            m_VolumeImageButton = std::make_shared<taskhub::Image>(width, height, taskhub::ImageFormat::RGBA, data);
+            free(data);
+
+            data = taskhub::Image::DecodeFromMemory(muteImage, sizeof(muteImage), width, height);
+            m_VolumeMuteImageButton = std::make_shared<taskhub::Image>(width, height, taskhub::ImageFormat::RGBA, data);
+            free(data);
+
+            data = taskhub::Image::DecodeFromMemory(loopOffImage, sizeof(loopOffImage), width, height);
+            m_LoopingOffImageButton = std::make_shared<taskhub::Image>(width, height, taskhub::ImageFormat::RGBA, data);
+            free(data);
+
+            data = taskhub::Image::DecodeFromMemory(loopOnImage, sizeof(loopOnImage), width, height);
+            m_LoopingOnImageButton = std::make_shared<taskhub::Image>(width, height, taskhub::ImageFormat::RGBA, data);
+            free(data);
+        }
+
         m_LoopingOffImageButton->Resize((uint32_t)(m_LoopingOffImageButton->GetWidth() * 0.5f), (uint32_t)(m_LoopingOffImageButton->GetHeight() * 0.5f));
         m_LoopingOnImageButton->Resize((uint32_t)(m_LoopingOnImageButton->GetWidth() * 0.5f), (uint32_t)(m_LoopingOnImageButton->GetHeight() * 0.5f));
-
-        m_FileDialog = taskhub::FileDialog::Create();
- 
-        m_AudioPlayer = std::make_unique<taskhub::AudioSource>();
-
-        m_DisplayFlag = std::make_unique<bool>(false);
     }
 
-    void AddSong() {
+    void AddAudio() {
         
         // If adding into an empty playlist we must initalize the AudioPlayer's state for DrawControls() to function
         bool isEmptyFlag = m_Playlist.empty();
@@ -53,7 +84,7 @@ public:
         }
     }
 
-    void AddSongFolder() {
+    void AddAudioFolder() {
 
         // If adding into an empty playlist we must initalize the AudioPlayer's state for DrawControls() to function
         bool isEmptyFlag = m_Playlist.empty();
@@ -63,19 +94,18 @@ public:
 
             for (const auto& entry : std::filesystem::directory_iterator(folderPath)) {
 
-                if (entry.is_regular_file()) {
+                std::string filePath = entry.path().string();
 
-                    std::string filePath = entry.path().string();
-                    if (taskhub::AudioFile::IsFileValid(filePath)) {
+                if (taskhub::AudioFile::IsFileValid(filePath)) {
 
-                        m_Playlist.emplace_back(std::make_shared<taskhub::AudioFile>(filePath));
+                    m_Playlist.emplace_back(std::make_shared<taskhub::AudioFile>(filePath));
 
-                        if (isEmptyFlag) {
-                            m_AudioPlayer->Load(*m_Playlist[0]);
-                            m_CurrentTrack = 0;
-                        }
+                    if (isEmptyFlag) {
+                        m_AudioPlayer->Load(*m_Playlist[0]);
+                        m_CurrentTrack = 0;
                     }
                 }
+                
             }
         }
     }
@@ -87,15 +117,15 @@ public:
 
         ImGuiWindowFlags windowFlags = ImGuiWindowFlags_MenuBar;
 
-        ImGui::Begin("Music Player", nullptr, windowFlags);
+        ImGui::Begin("Audio Player", nullptr, windowFlags);
 
         ImGui::BeginMenuBar();
 
-        if (ImGui::MenuItem("Add Song"))
-            AddSong();
+        if (ImGui::MenuItem("Add Audio File"))
+            AddAudio();
         
-        if (ImGui::MenuItem("Add Song Folder")) 
-            AddSongFolder();
+        if (ImGui::MenuItem("Add Audio Folder")) 
+            AddAudioFolder();
         
         ImGui::EndMenuBar();
 
@@ -171,7 +201,7 @@ public:
 
 
         taskhub::UI::AlignCursorForHeight(100, 0.9f);
-        ImGui::BeginChild("MusicControls");
+        ImGui::BeginChild("AudioControls");
         
         // Play|Pause control buttons
         {
@@ -334,7 +364,10 @@ private:
 private:
     std::unique_ptr<taskhub::AudioSource> m_AudioPlayer;
     std::vector<std::shared_ptr<taskhub::AudioFile>> m_Playlist;
+    std::unique_ptr<taskhub::FileDialog> m_FileDialog;
+    std::unique_ptr<bool> m_DisplayFlag;
 
+private:
     std::shared_ptr<taskhub::Image> m_PlayImageButton;
     std::shared_ptr<taskhub::Image> m_PauseImageButton;
     std::shared_ptr<taskhub::Image> m_ForwardImageButton;
@@ -343,16 +376,6 @@ private:
     std::shared_ptr<taskhub::Image> m_VolumeMuteImageButton;
     std::shared_ptr<taskhub::Image> m_LoopingOffImageButton;
     std::shared_ptr<taskhub::Image> m_LoopingOnImageButton;
-    
-    std::unique_ptr<taskhub::FileDialog> m_FileDialog;
-
-private:
-    std::unique_ptr<bool> m_DisplayFlag;
-};
-
-class TaskHubPreview : public taskhub::Layer {
-public:
-
 };
 
 void ShowToolMenu() {
