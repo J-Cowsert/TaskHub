@@ -1,5 +1,5 @@
 #pragma once
-#include "Core/Image.h"
+#include "Image.h"
 #include "imgui.h"
 #include "imgui_internal.h"
 #include <memory>

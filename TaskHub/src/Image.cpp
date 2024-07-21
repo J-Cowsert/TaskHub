@@ -1,5 +1,5 @@
 #include "Image.h"
-#include "Assert.h"
+#include "Core/Assert.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
