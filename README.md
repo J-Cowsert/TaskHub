@@ -1,4 +1,6 @@
 # TaskHub
+### 🚧 Work in Progress
+> **Codebase subject to change**
 ## Overview
 TaskHub is a C++ framework designed to simplify the development of desktop applications using OpenGL & ImGui.
 > **Note:** Currently, TaskHub supports Windows, with plans for future cross-platform support.
