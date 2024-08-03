@@ -11,18 +11,4 @@ namespace taskhub::UI {
 	void ShiftCursorY(float distance);
 	void AlignCursorForWidth(float width, float alignment);
 	void AlignCursorForHeight(float height, float alignment);
-
-	void RenderImageButton(const std::shared_ptr<taskhub::Image>& image,
-		                   const std::shared_ptr<taskhub::Image>& imageHovered, 
-		                   const std::shared_ptr<taskhub::Image>& imagePressed,
-		                   ImU32 tint, ImU32 tintHovered, ImU32 tintPressed,
-		                   ImVec2 rectMin, ImVec2 rectMax);
-
-	void RenderImageButton(const std::shared_ptr<taskhub::Image>& image,
-		                   ImU32 tint, ImU32 tintHovered, ImU32 tintPressed,
-		                   ImVec2 rectMin, ImVec2 rectMax);
-
-	void RenderImageButton(const std::shared_ptr<taskhub::Image>& image,
-		                   ImU32 tint, ImU32 tintHovered, ImU32 tintPressed);
-	
 }
