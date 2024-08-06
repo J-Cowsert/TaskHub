@@ -3,7 +3,7 @@ project "TaskHub"
    language "C++"
    cppdialect "C++20"
    targetdir "Binaries/%{cfg.buildcfg}"
-   staticruntime "off"
+   staticruntime "on"
 
    files { "src/**.h", "src/**.cpp" }
 
