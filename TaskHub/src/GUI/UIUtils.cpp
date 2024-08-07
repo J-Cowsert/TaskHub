@@ -17,7 +17,7 @@ namespace taskhub::UI {
 		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + distance);
 	}
 
-	void AlignCursorForWidth(float width, float alignment = 0.5f) {
+	void AlignCursorForWidth(float width, float alignment) {
 
 		float availWidth = ImGui::GetContentRegionAvail().x;
 		float offsetX = (availWidth - width) * alignment;
@@ -25,7 +25,7 @@ namespace taskhub::UI {
 			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offsetX);
 	}
 
-	void AlignCursorForHeight(float height, float alignment = 0.5f) {
+	void AlignCursorForHeight(float height, float alignment) {
 
 		float availHeight = ImGui::GetContentRegionAvail().y;
 		float offsetY = (availHeight - height) * alignment;
