@@ -1,11 +1,16 @@
 #include "Core/Application.h"
 #include "Core/EntryPoint.h"
-#include "resources.embed"
-#include "Core/Image.h"
+
+///////////////////////////////
+
+#include "Image.h"
 #include "Audio/AudioSource.h"
 #include "Audio/AudioFile.h"
+#include "Time/Timer.h"
+#include "GUI/CustomWidgets.h"
 #include "GUI/UIUtils.h"
 #include "FileDialog.h"
+#include "res/Images.embed"
 #include <chrono>
 #include <format>
 
@@ -18,12 +23,11 @@ public:
         m_FileDialog = taskhub::FileDialog::Create();
         m_DisplayFlag = std::make_unique<bool>(false);
 
+        // The following code decodes images from byte arrays, eliminating the need to include 
+        // PNG files directly in the repository. Below I've provided an example of loading an 
+        // image directly from a file.
+        // m_PlayImageButton = std::make_shared<taskhub::Image>("C:/Dev/Resources/Images/Audio/Play.png");
         {            
-            // The following code decodes images from byte arrays, eliminating the need to include 
-            // PNG files directly in the repository. Below I've provided an example of loading an 
-            // image directly from a file.
-            // m_PlayImageButton = std::make_shared<taskhub::Image>("C:/Dev/Resources/Images/Audio/Play.png");
-            
             uint32_t width, height;
             void* data;
 
@@ -378,6 +382,111 @@ private:
     std::shared_ptr<taskhub::Image> m_LoopingOnImageButton;
 };
 
+class FocusTimer : public taskhub::Layer {
+public:
+    void OnAttach() override {
+
+        {
+            uint32_t width, height;
+            void* data;
+
+            data = taskhub::Image::DecodeFromMemory(timerLogo, sizeof(timerLogo), width, height);
+            m_MenuBarIcon = std::make_shared<taskhub::Image>(width, height, taskhub::ImageFormat::RGBA, data);
+            free(data);
+        }
+
+        m_TimerAudioSource = std::make_unique<taskhub::AudioSource>();
+
+        taskhub::AudioFile sound("../TaskHubApp/res/simple-notification.mp3");
+        m_TimerAudioSource->Load(sound);
+
+        m_Timer = std::make_unique<taskhub::Timer>([&]{ 
+            HUB_INFO("Timer complete!"); 
+            m_TimerAudioSource->Play();
+            m_Timer->Reset();
+        });
+
+        m_Timer->SetTimer<std::chrono::seconds>(0);
+    }
+
+    void OnUIRender() override {
+
+        ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+        ImGuiPopupFlags popupFlags = ImGuiPopupFlags_MouseButtonLeft;
+
+        ImGui::OpenPopupOnItemClick("Focus Timer Popup", popupFlags);
+
+        if (ImGui::BeginPopup("Focus Timer Popup", windowFlags)) {
+
+            float remainingTime = m_Timer->GetRemainingTime();
+            std::string formattedRemTime = std::format("{:02}:{:02}", static_cast<int>(remainingTime) / 60, static_cast<int>(remainingTime) % 60);
+            std::string formattedSetTime = std::format("{:02}:{:02}", static_cast<int>(m_SetTime) / 60, static_cast<int>(m_SetTime) % 60);
+
+            float progress = m_SetTime != 0.0f ? remainingTime / m_SetTime : 0.0f;
+            progress = ImClamp(progress, 0.0f, 1.0f);
+
+            ImVec4 startColor(0.9f, 0.5f, 0.4f, 1.0f);
+            ImVec4 endColor(0.9f, 0.3f, 0.2f, 1.0f);
+ 
+            // Interpolate from startColor to endColor based on progress
+            float r = (1.0f - progress) * startColor.x + progress * endColor.x;
+            float g = (1.0f - progress) * startColor.y + progress * endColor.y;
+            float b = (1.0f - progress) * startColor.z + progress * endColor.z;
+
+            uint32_t progressColor = IM_COL32((int)(r * 255), (int)(g * 255), (int)(b * 255), 255);
+
+            if (m_Timer->IsRunning())
+                taskhub::UI::CircularProgressBar(100, 10, progress, formattedRemTime, progressColor);
+            else
+                taskhub::UI::CircularProgressBar(100, 10, 0, formattedSetTime, progressColor);
+
+            // Controls 
+            {
+                if (ImGui::Button("#")) {
+                    m_Timer->Reset();
+                }
+                ImGui::SameLine();
+                if (ImGui::Button(">")) {
+
+                    if (!m_Timer->IsRunning())
+                        m_Timer->SetTimer<std::chrono::seconds>(m_SetTime);
+                    
+                    m_Timer->Start();
+                }
+                if (!m_Timer->IsRunning()) {
+                    ImGui::SameLine();
+                    if (ImGui::Button("+")) {
+                        m_SetTime += 60;
+                    }
+                    ImGui::SameLine();
+                    if (ImGui::Button("-")) {
+                        m_SetTime -= 60;
+                    }
+                }
+            }
+
+
+            ImGui::EndPopup();
+        }
+    }
+
+    void RenderMenu() {
+        ImGui::ImageButton("TimerIcon", (void*)(intptr_t)m_MenuBarIcon->GetTextureID(), ImVec2(25, 25));
+    }
+
+    bool* GetDisplayFlag() const { return m_DisplayFlag.get(); }
+
+private:
+    float m_SetTime = 0;
+
+private:
+    std::unique_ptr<taskhub::Timer> m_Timer;
+    std::unique_ptr<taskhub::AudioSource> m_TimerAudioSource;
+    std::shared_ptr<taskhub::Image> m_MenuBarIcon;
+
+    std::unique_ptr<bool> m_DisplayFlag;
+};
+
 void ShowToolMenu() {
 
     static bool s_ShowDemoWindow = false;
@@ -399,23 +508,26 @@ taskhub::Application* taskhub::CreateApplication() {
 
     taskhub::ApplicationProvision provision;
 
-    provision.AppIconPath = "C:/Dev/Resources/Images/TaskHub.png";
+    //provision.AppIconPath = "C:/Dev/Resources/Images/TaskHub/TaskHub.png";
+    provision.Name = "TaskHub Demo";
 
     taskhub::Application* app = new taskhub::Application(provision);
 
     std::shared_ptr<AudioPlayer> audioPlayer = std::make_shared<AudioPlayer>();
+    std::shared_ptr<FocusTimer> focusTimer = std::make_shared<FocusTimer>();
     app->PushLayer(audioPlayer);
+    app->PushLayer(focusTimer);
 
-    app->SetMenubarCallback([app, audioPlayer]() {
+    app->SetMenubarCallback([app, audioPlayer, focusTimer]() {
 
         ShowToolMenu();
-
+        
         if (ImGui::BeginMenu("Mini Apps")) {
-
             ImGui::MenuItem("AudioPlayer", nullptr, audioPlayer->GetDisplayFlag());
-
             ImGui::EndMenu();
         }
+
+        focusTimer->RenderMenu();        
     });
 
     return app;
