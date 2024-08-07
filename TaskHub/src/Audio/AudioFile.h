@@ -15,7 +15,7 @@ namespace taskhub {
 
 	class AudioFile {
 	public:
-		AudioFile(const std::string& filepath);
+		explicit AudioFile(const std::string& filepath);
 		~AudioFile() = default;
 
 		AudioFile(const AudioFile&) = delete;
@@ -29,8 +29,6 @@ namespace taskhub {
 		static bool IsFileValid(const std::string& filepath);
 
 	private:
-		void InitDecoder();
-
 		void SetName(); 
 		void SetDuration();
 		void SetFileExtension();
