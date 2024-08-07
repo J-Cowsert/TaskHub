@@ -12,7 +12,7 @@ obj/
 *.sln
 *.log
 imgui.ini
-Makefile
+.gitmodules
 
 # Exclude
 !Vendor/Binaries
