@@ -2,10 +2,6 @@
 #include "AudioFile.h"
 #include "miniaudio.h"
 
-/*
-	AudioSource offers a straightforward and easy-to-use interface for handling audio playback. 
-	It is designed to simplify the process of managing audio files, allowing you to load, play, pause, and control tracks with minimal effort.
-*/
 namespace taskhub {
 
 	class AudioSource {

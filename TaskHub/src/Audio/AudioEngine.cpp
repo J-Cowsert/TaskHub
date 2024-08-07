@@ -6,8 +6,8 @@ namespace taskhub {
 	AudioEngine* AudioEngine::s_Instance = nullptr;
 
 	AudioEngine::AudioEngine()
-		: m_EngineHandle(std::make_unique<ma_engine>())
-	{
+		: m_EngineHandle(std::make_unique<ma_engine>()) {
+
 		ma_result result = ma_engine_init(nullptr, m_EngineHandle.get());
 		HUB_CORE_ASSERT(result == MA_SUCCESS, "Engine failed to initialize");
 	}
@@ -17,7 +17,7 @@ namespace taskhub {
 	}
 
 	AudioEngine* AudioEngine::GetInstance() {
-		
+
 		if (s_Instance == nullptr) {
 			s_Instance = new AudioEngine();
 		}
@@ -25,7 +25,7 @@ namespace taskhub {
 	}
 
 	void AudioEngine::SetGlobalVolume(float volume) {
-		
+
 		ma_result result;
 		result = ma_engine_set_volume(m_EngineHandle.get(), volume);
 		HUB_CORE_ASSERT(result == MA_SUCCESS, "Engine failed to set volume");

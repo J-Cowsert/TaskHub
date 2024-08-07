@@ -17,9 +17,14 @@ namespace taskhub {
 
 		Unload();
 
+		ma_sound_config config = ma_sound_config_init_2(AudioEngine::GetInstance()->GetEngineHandle());
+		config.pFilePath = audioFile.GetFilepath().c_str();
+		config.flags |= MA_SOUND_FLAG_ASYNC;
+
 		ma_result result;
-		result = ma_sound_init_from_file(AudioEngine::GetInstance()->GetEngineHandle(), audioFile.GetFilepath().c_str(), MA_SOUND_FLAG_ASYNC, nullptr, nullptr, m_SoundHandle.get());
+		result = ma_sound_init_ex(AudioEngine::GetInstance()->GetEngineHandle(), &config, m_SoundHandle.get());
 		HUB_CORE_ASSERT(result == MA_SUCCESS, "Failed to initialize sound");
+
 		m_IsLoaded = true;
 	}
 
@@ -55,7 +60,7 @@ namespace taskhub {
 		HUB_CORE_ASSERT(m_IsLoaded, "Sound is not loaded");
 		ma_result result;
 		result = ma_sound_seek_to_pcm_frame(m_SoundHandle.get(), static_cast<uint64_t>(seconds * AudioEngine::GetInstance()->GetSampleRate()));
-		HUB_CORE_ASSERT(result == MA_SUCCESS, "Failed to seek to pcm frame")
+		HUB_CORE_ASSERT(result == MA_SUCCESS, "Failed to seek to pcm frame");
 	}
 
 	void AudioSource::SetLooping(bool isLooping) {

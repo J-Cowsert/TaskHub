@@ -4,16 +4,17 @@
 
 namespace taskhub {
 
-	taskhub::AudioFile::AudioFile(const std::string& filepath)
+	AudioFile::AudioFile(const std::string& filepath)
 		: m_Filepath(filepath), m_DecoderHandle(std::make_unique<ma_decoder>())
 	{
 		HUB_CORE_ASSERT(std::filesystem::exists(m_Filepath), "Filepath does not exist");
 		
-		SetFileExtension();
-
-		SetName();
-		InitDecoder();
+		ma_result result = ma_decoder_init_file(m_Filepath.c_str(), nullptr, m_DecoderHandle.get()); // ma_decoder is used to calculate the duration of the AudioFile
+		HUB_CORE_ASSERT(result == MA_SUCCESS, "Filed to initialize decoder");
+		
 		SetDuration();
+		SetFileExtension();
+		SetName();
 
 		ma_decoder_uninit(m_DecoderHandle.get());
 	}
@@ -27,12 +28,6 @@ namespace taskhub {
 		}
 
 		return false;
-	}
-
-	void AudioFile::InitDecoder() {
-		
-		ma_result result = ma_decoder_init_file(m_Filepath.c_str(), nullptr, m_DecoderHandle.get());
-		HUB_CORE_ASSERT(result == MA_SUCCESS, "Filed to initialize decoder");
 	}
 
 	void AudioFile::SetName() {
@@ -74,8 +69,7 @@ namespace taskhub {
 			return;
 		} 
 		else {
-			HUB_CORE_ASSERT(false, "File type not supported. Be sure to check if the file is valid with the IsFileValid method!");
+			HUB_CORE_ASSERT(false, "File type not supported. Be sure to check if the file is valid with the IsFileValid method.");
 		}
-
 	}
 }
