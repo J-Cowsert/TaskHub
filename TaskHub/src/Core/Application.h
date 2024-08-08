@@ -1,14 +1,15 @@
 #pragma once
 #include "Log.h"
 #include "Layer.h"
+#include "GraphicsContext.h"
 #include "Image.h"
 #include "imgui.h"
 #include <string>
 #include <vector>
 #include <memory>
 #include <filesystem>
-
-struct GLFWwindow;
+#include <functional>
+#include "GLFW/glfw3.h"
 
 namespace taskhub {
 
@@ -47,6 +48,9 @@ namespace taskhub {
 
 	private:
 		GLFWwindow* m_Window = nullptr;
+		std::unique_ptr<GraphicsContext> m_Context;
+
+	private:
 		ApplicationProvision m_AppProvision;
 		bool m_Running = true;
 

@@ -1,8 +1,6 @@
 #include "Application.h"
-#include "Log.h"
 #include "Assert.h"
-#include <GLFW/glfw3.h>
-#include <glad/glad.h>
+#include "GraphicsContext.h"
 #include "GUI/ImGuiStyle.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_glfw.h"
@@ -111,7 +109,7 @@ namespace taskhub {
 			std::this_thread::sleep_for(std::chrono::milliseconds(6));
 
 			// Rendering
-			glfwSwapBuffers(m_Window);
+			m_Context->SwapBuffers();
 			ImGui::Render();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -144,20 +142,11 @@ namespace taskhub {
 
 		m_Window = glfwCreateWindow(m_AppProvision.Width, m_AppProvision.Height, m_AppProvision.Name.c_str(), nullptr, nullptr);
 		
-		if (!m_Window) {
-			HUB_CORE_ERROR("Failed to create window");
-			return;
-		}
+		HUB_CORE_ASSERT(m_Window, "Failed to create window");
 
-		glfwMakeContextCurrent(m_Window);
-
-		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-
-		if (!status) {
-			HUB_CORE_ERROR("Failed to initalize glad");
-			return;
-		}
-
+		m_Context = std::make_unique<GraphicsContext>(m_Window);
+		m_Context->Init();
+		
 		glfwSwapInterval(1); // Enable vsync
 
 		// Set app icon if defined by user
