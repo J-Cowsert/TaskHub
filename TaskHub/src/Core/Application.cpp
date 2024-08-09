@@ -1,3 +1,4 @@
+//#include "glad/glad.h" TODO: Fix
 #include "Application.h"
 #include "Assert.h"
 #include "GraphicsContext.h"
@@ -31,7 +32,7 @@ namespace taskhub {
 
 	void Application::Run() {
 
-		ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+		ImVec4 clearColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 		ImGuiIO& io = ImGui::GetIO();
 
 		while (!glfwWindowShouldClose(m_Window) && m_Running) {
@@ -42,7 +43,7 @@ namespace taskhub {
 			// - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
 			// Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
 			glfwPollEvents();
-		
+
 			for (auto& layer : m_LayerStack) {
 				layer->OnUpdate();
 			}
@@ -106,11 +107,15 @@ namespace taskhub {
 				ImGui::End();
 			}
 
-			std::this_thread::sleep_for(std::chrono::milliseconds(6));
+			std::this_thread::sleep_for(std::chrono::milliseconds(5));
 
 			// Rendering
-			m_Context->SwapBuffers();
 			ImGui::Render();
+			//int displayW, displayH;
+			//glfwGetFramebufferSize(m_Window, &displayW, &displayH);
+			//glViewport(0, 0, displayW, displayH);
+			//glClearColor(clearColor.x * clearColor.w, clearColor.y * clearColor.w, clearColor.z * clearColor.w, clearColor.w);
+			//glClear(GL_COLOR_BUFFER_BIT);
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
@@ -120,18 +125,12 @@ namespace taskhub {
 				ImGui::RenderPlatformWindowsDefault();
 				glfwMakeContextCurrent(backup_current_context);
 			}
+
+			m_Context->SwapBuffers();
 		}
 	}
 
-	void Application::Close() {
-		m_Running = false;
-	}
-
-	Application& Application::Get() {
-		return *s_Instance;
-	}
-
-	void Application::Init() { 
+	void Application::Init() {
 
 		glfwSetErrorCallback(glfw_error_callback);
 
@@ -140,13 +139,17 @@ namespace taskhub {
 			return;
 		}
 
+		#if defined(HUB_DEBUG)
+			glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+		#endif
+
 		m_Window = glfwCreateWindow(m_AppProvision.Width, m_AppProvision.Height, m_AppProvision.Name.c_str(), nullptr, nullptr);
-		
+
 		HUB_CORE_ASSERT(m_Window, "Failed to create window");
 
 		m_Context = std::make_unique<GraphicsContext>(m_Window);
 		m_Context->Init();
-		
+
 		glfwSwapInterval(1); // Enable vsync
 
 		// Set app icon if defined by user
@@ -170,11 +173,12 @@ namespace taskhub {
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+		io.ConfigDockingTransparentPayload = true;
+		//io.ConfigViewportsNoAutoMerge = true;
 
 		// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
 		ImGuiStyle& style = ImGui::GetStyle();
-		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-		{
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
 			style.WindowRounding = 0.0f;
 			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 		}
@@ -191,6 +195,18 @@ namespace taskhub {
 
 		// Set default theme
 		UI::SetTaskHubStyle();
+	}
+
+	void Application::Close() {
+		m_Running = false;
+	}
+
+	Application& Application::Get() {
+		return *s_Instance;
+	}
+
+	bool Application::IsMinimized() {
+		return (bool)glfwGetWindowAttrib(m_Window, GLFW_ICONIFIED);
 	}
 
 	void Application::Shutdown() {
