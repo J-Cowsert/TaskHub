@@ -2,14 +2,13 @@
 #include "Log.h"
 #include "Layer.h"
 #include "GraphicsContext.h"
-#include "Image.h"
 #include "imgui.h"
+#include "GLFW/glfw3.h"
 #include <string>
 #include <vector>
 #include <memory>
 #include <filesystem>
 #include <functional>
-#include "GLFW/glfw3.h"
 
 namespace taskhub {
 
@@ -41,6 +40,8 @@ namespace taskhub {
 
 		static Application& Get();
 		GLFWwindow* GetWindow() const { return m_Window; }
+
+		bool IsMinimized();
 
 	private:
 		void Init();
