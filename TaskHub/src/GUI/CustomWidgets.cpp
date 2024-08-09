@@ -37,12 +37,15 @@ namespace taskhub::UI {
 		ImVec2 center = ImVec2(ImGui::GetCursorScreenPos().x + radius, ImGui::GetCursorScreenPos().y + radius);
 
 		const float startAngle = -IM_PI / 2;
+
+		progress = std::clamp(progress, 0.0f, 1.0f);
+		HUB_CORE_ASSERT(progress >= 0.0f && progress <= 1.0f, "Progress should always be in between 0 and 1.");
+
 		const float endAngle = startAngle - progress * 2.0f * IM_PI;
 
 		// Draw background circle outline
 		draw_list->AddCircle(center, radius, IM_COL32(100, 100, 100, 255), 100, thickness);
 
-		HUB_CORE_ASSERT(progress >= 0.0f && progress <= 1.0f, "Progress should always be in between 0 and 1.")
 		if (progress > 0.0f) {
 			draw_list->PathArcTo(center, radius, startAngle, endAngle, 100);
 			draw_list->PathStroke(col, ImDrawFlags_RoundCornersAll, thickness + 0.5f);
