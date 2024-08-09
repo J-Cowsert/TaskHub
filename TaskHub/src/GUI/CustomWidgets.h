@@ -6,7 +6,6 @@
 
 namespace taskhub::UI {
 
-
 	/// Renders an image button with different images for different states (normal, hovered, and pressed).
 	/// 
 	/// This function draws an image button with the provided images and tint colors.
@@ -16,8 +15,8 @@ namespace taskhub::UI {
 	/// if (ImGui::InvisibleButton("str_id", ImVec2(Image->GetWidth(), Image->GetHeight()))) {
 	///      
 	///	    //Code to run when ImageButton is pressed
-    /// }
-    /// taskhub::UI::RenderImageButton(Image, ImageHovered, ImagePressed, Tint, TintHovered, TintPressed, ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
+	/// }
+	/// taskhub::UI::RenderImageButton(Image, ImageHovered, ImagePressed, Tint, TintHovered, TintPressed, ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
 	/// 
 	/// Parameters:
 	///		image - The image to display when the button is in its default state.
