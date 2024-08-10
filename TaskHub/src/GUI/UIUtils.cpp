@@ -19,6 +19,8 @@ namespace taskhub::UI {
 
 	void AlignCursorForWidth(float width, float alignment) {
 
+		alignment = std::clamp(alignment, 0.0f, 1.0f);
+
 		float availWidth = ImGui::GetContentRegionAvail().x;
 		float offsetX = (availWidth - width) * alignment;
 		if (offsetX > 0.0f)
@@ -26,6 +28,8 @@ namespace taskhub::UI {
 	}
 
 	void AlignCursorForHeight(float height, float alignment) {
+
+		alignment = std::clamp(alignment, 0.0f, 1.0f);
 
 		float availHeight = ImGui::GetContentRegionAvail().y;
 		float offsetY = (availHeight - height) * alignment;
