@@ -1,6 +1,7 @@
 #pragma once
-#include "Log.h"
+#include "Base.h"
 #include "Layer.h"
+#include "Image.h"
 #include "GraphicsContext.h"
 #include "imgui.h"
 #include "GLFW/glfw3.h"
@@ -41,7 +42,7 @@ namespace taskhub {
 		static Application& Get();
 		GLFWwindow* GetWindow() const { return m_Window; }
 
-		bool IsMinimized();
+		bool IsMinimized() const;
 
 	private:
 		void Init();

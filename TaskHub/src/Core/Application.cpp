@@ -154,7 +154,7 @@ namespace taskhub {
 
 		// Set app icon if defined by user
 		if (!m_AppProvision.AppIconPath.empty()) {
-
+			
 			GLFWimage icon;
 			int channels;
 			int desiredChannels = 4;
@@ -205,7 +205,7 @@ namespace taskhub {
 		return *s_Instance;
 	}
 
-	bool Application::IsMinimized() {
+	bool Application::IsMinimized() const {
 		return (bool)glfwGetWindowAttrib(m_Window, GLFW_ICONIFIED);
 	}
 
