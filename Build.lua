@@ -12,14 +12,16 @@ OutputDir = "%{cfg.system}-%{cfg.architecture}/%{cfg.buildcfg}"
 
 
 group "TaskHub"
-   include "TaskHub/Build-Core.lua"
+   include "TaskHub/Build-TaskHub.lua"
 group ""
 
 group "Dependencies"
    include "Vendor/imgui"
    include "Vendor/glfw"
    include "Vendor/Glad"
+   include "Vendor/spdlog"
    include "Vendor/miniaudio"
+   include "Vendor/stb_image"
 group ""
 
 include "TaskHubApp/Build-App.lua"
