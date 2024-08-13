@@ -3,6 +3,8 @@
 #include <chrono>
 #include <functional>
 
+using namespace std::chrono_literals;
+
 namespace taskhub {
 
 	class Timer {
@@ -10,10 +12,9 @@ namespace taskhub {
 		explicit Timer(std::function<void()> timerCompletedCallback);
 		~Timer() = default;
 
-		template<typename DurationType>
-		void SetTimer(float duration) {
-			auto durationInInt = static_cast<typename DurationType::rep>(duration);
-			m_Duration = DurationType(durationInInt);
+		template<class _Rep, class _Period>
+		void SetTimer(std::chrono::duration<_Rep, _Period> duration) {
+			m_Duration = duration;
 		}
 
 		void SetCompletedCallback(std::function<void()>& callback) { m_TimerCompletedCallback = callback; }
