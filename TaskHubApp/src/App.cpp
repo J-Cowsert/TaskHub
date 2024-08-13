@@ -159,7 +159,7 @@ public:
         ImGuiWindowFlags windowFlags = ImGuiWindowFlags_None;
         ImGuiSelectableFlags selectableFlags = ImGuiSelectableFlags_AllowItemOverlap;
 
-        ImGui::BeginChild("PlaylistView", ImVec2(ImGui::GetContentRegionAvail().x * 0.5f, 300), childFlags, windowFlags);
+        ImGui::BeginChild("PlaylistView", ImVec2(ImGui::GetContentRegionAvail().x, 300), childFlags, windowFlags);
 
         for (size_t i = 0; i < m_Playlist.size(); i++) {
 
@@ -406,23 +406,24 @@ public:
             m_Timer->Reset();
         });
 
-        m_Timer->SetTimer<std::chrono::seconds>(0);
+        m_Timer->SetTimer(m_SetTime);
     }
 
     void OnUIRender() override {
 
-        ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-        ImGuiPopupFlags popupFlags = ImGuiPopupFlags_MouseButtonLeft;
+        ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoResize;
+        ImGuiPopupFlags popupFlags = ImGuiPopupFlags_MouseButtonLeft | ImGuiPopupFlags_AnyPopup;
 
         ImGui::OpenPopupOnItemClick("Focus Timer Popup", popupFlags);
 
         if (ImGui::BeginPopup("Focus Timer Popup", windowFlags)) {
+         
 
             float remainingTime = m_Timer->GetRemainingTime();
             std::string formattedRemTime = std::format("{:02}:{:02}", static_cast<int>(remainingTime) / 60, static_cast<int>(remainingTime) % 60);
-            std::string formattedSetTime = std::format("{:02}:{:02}", static_cast<int>(m_SetTime) / 60, static_cast<int>(m_SetTime) % 60);
+            std::string formattedSetTime = std::format("{:02}:{:02}", static_cast<int>(m_SetTime.count()) / 60, static_cast<int>(m_SetTime.count()) % 60);
 
-            float progress = m_SetTime != 0.0f ? remainingTime / m_SetTime : 0.0f;
+            float progress = m_SetTime.count() != 0.0f ? remainingTime / m_SetTime.count() : 0.0f;
             progress = ImClamp(progress, 0.0f, 1.0f);
 
             ImVec4 startColor(0.9f, 0.5f, 0.4f, 1.0f);
@@ -449,18 +450,18 @@ public:
                 if (ImGui::Button(">")) {
 
                     if (!m_Timer->IsRunning())
-                        m_Timer->SetTimer<std::chrono::seconds>(m_SetTime);
+                        m_Timer->SetTimer(m_SetTime);
                     
                     m_Timer->Start();
                 }
                 if (!m_Timer->IsRunning()) {
                     ImGui::SameLine();
                     if (ImGui::Button("+")) {
-                        m_SetTime += 60;
+                        m_SetTime += 1min;
                     }
                     ImGui::SameLine();
                     if (ImGui::Button("-")) {
-                        m_SetTime -= 60;
+                        m_SetTime -= 1min;
                     }
                 }
             }
@@ -477,7 +478,7 @@ public:
     bool* GetDisplayFlag() const { return m_DisplayFlag.get(); }
 
 private:
-    float m_SetTime = 0;
+    std::chrono::duration<float> m_SetTime = 0s;
 
 private:
     std::unique_ptr<taskhub::Timer> m_Timer;
