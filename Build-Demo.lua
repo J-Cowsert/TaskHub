@@ -10,16 +10,5 @@ workspace "TaskHub"
 
 OutputDir = "%{cfg.system}-%{cfg.architecture}/%{cfg.buildcfg}"
 
-
-group "TaskHub"
-   include "TaskHub/Build-TaskHub.lua"
-group ""
-
-group "Dependencies"
-   include "Vendor/imgui"
-   include "Vendor/glfw"
-   include "Vendor/Glad"
-   include "Vendor/miniaudio"
-group ""
-
+include "Build-External.lua"
 include "TaskHubApp/Build-App.lua"
