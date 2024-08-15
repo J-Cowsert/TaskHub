@@ -1,5 +1,5 @@
 #pragma once
-#include "Image.h"
+#include "GUI/Image.h"
 #include "imgui.h"
 #include "imgui_internal.h"
 #include <memory>
@@ -66,4 +66,6 @@ namespace taskhub::UI {
 	///		text - The text to display in the center of the progress bar.
 	///		col - The color of the progress bar stroke.
 	void CircularProgressBar(float radius, float thickness, float progress, const std::string& text, ImU32 col);
+
+	void ToggleButton(const char* str_id, bool* v);
 }
