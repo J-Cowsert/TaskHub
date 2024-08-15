@@ -1,7 +1,7 @@
 #pragma once
 #include "Base.h"
 #include "Layer.h"
-#include "Image.h"
+#include "GUI/Image.h"
 #include "GraphicsContext.h"
 #include "imgui.h"
 #include "GLFW/glfw3.h"
