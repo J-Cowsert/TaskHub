@@ -1,13 +1,12 @@
 # TaskHub
-### 🚧 Work in Progress
-> **Codebase subject to change**
+> [!IMPORTANT]
+> TaskHub is in a pre-alpha state.
+>
+>  Currently only supports Windows.
+>
+
 ## Overview
 TaskHub is a C++ framework designed to simplify the development of desktop applications using OpenGL & ImGui.
-> **Note:** Currently, TaskHub supports Windows, with plans for future cross-platform support.
-## Features
-- **Modular Architecture:** Easily extend and customize the framework to suit your needs.
-- **ImGui Integration:** Quickly create interactive and user-friendly interfaces.
-- **Audio Support:** Manage and play audio files with miniaudio.
 
 ## Build
 TaskHub builds into a static library and TaskHubApp builds into an executable and links to TaskHub.
@@ -30,11 +29,3 @@ From there you can run the TaskHubApp project to see a basic example (Code is in
 
 ## License
 - MIT License for this repository (see `LICENSE.txt` for more details)
-
----
-
-## *Feedback*
-
-If you notice any issues or areas for improvement, please feel free to open an issue. I'm eager for feedback and looking to improve. Your suggestions are greatly appreciated!
-
----
