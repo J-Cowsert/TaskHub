@@ -1,6 +1,5 @@
 # TaskHub
 > [!IMPORTANT]
-> TaskHub is in a pre-alpha state.
 >
 >  Currently only supports Windows.
 >
