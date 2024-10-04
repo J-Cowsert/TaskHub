@@ -1,3 +1,9 @@
+
+// Below are some example layers showing one way to use taskhub. They are't designed well but hopefully they provide some 
+// useful information about how to use some of the features currently available.
+//
+// Scroll to the bottom of the page or search for CreateApplication() to see how to connect to the framework backend and use your creations.
+
 #include "Core/Application.h"
 #include "Core/EntryPoint.h"
 
@@ -26,7 +32,7 @@ public:
         // The following code decodes images from byte arrays, eliminating the need to include 
         // PNG files directly in the repository. Below I've provided an example of loading an 
         // image directly from a file.
-        // m_PlayImageButton = std::make_shared<taskhub::Image>("C:/Dev/Resources/Images/Audio/Play.png");
+        // m_PlayImageButton = std::make_shared<taskhub::Image>("/Path/To/Image");
         {            
             uint32_t width, height;
             void* data;
@@ -70,7 +76,7 @@ public:
 
     void AddAudio() {
         
-        // If adding into an empty playlist we must initalize the AudioPlayer's state for DrawControls() to function
+        // If adding into an empty playlist we must initalize the AudioPlayer's state for DrawControls method to function. 
         bool isEmptyFlag = m_Playlist.empty();
 
         std::string filePath = m_FileDialog->OpenFile();
@@ -90,11 +96,12 @@ public:
 
     void AddAudioFolder() {
 
-        // If adding into an empty playlist we must initalize the AudioPlayer's state for DrawControls() to function
-        bool isEmptyFlag = m_Playlist.empty();
-
         std::string folderPath = m_FileDialog->OpenFolder();
         if (!folderPath.empty()) {
+
+            // If adding an audio folder into empty playlist we must load AudioPlayer's first audio file for DrawControls method to function. 
+            // Indicative of a bad design but works for now.
+            bool isEmptyFlag = m_Playlist.empty();
 
             for (const auto& entry : std::filesystem::directory_iterator(folderPath)) {
 
@@ -109,7 +116,9 @@ public:
                         m_CurrentTrack = 0;
                     }
                 }
-                
+                else {
+                    HUB_INFO("file {} not a valid audiofile.", entry.path().filename().string());
+                }
             }
         }
     }
@@ -203,7 +212,6 @@ public:
         static constexpr uint32_t s_TintHovered = IM_COL32(230, 230, 230, 255);
         static constexpr uint32_t s_TintPressed = IM_COL32(230, 230, 230, 150);
 
-
         taskhub::UI::AlignCursorForHeight(100, 0.9f);
         ImGui::BeginChild("AudioControls");
         
@@ -283,7 +291,6 @@ public:
             else {
                 if (ImGui::InvisibleButton("VolumeMute", ImVec2((float)m_VolumeMuteImageButton->GetWidth(), (float)m_VolumeMuteImageButton->GetHeight()))) {
                     m_MusicVolume = s_VolumeBeforeMute;
-                   
                 }
                 taskhub::UI::RenderImageButton(m_VolumeMuteImageButton, s_Tint, s_TintHovered, s_TintPressed);
             }
@@ -396,8 +403,8 @@ public:
         }
 
         m_TimerAudioSource = std::make_unique<taskhub::AudioSource>();
-
-        taskhub::AudioFile sound("../TaskHubApp/res/simple-notification.mp3");
+        std::filesystem::path path = "C://Dev/Projects/TaskHub/TaskHubApp/res/simple-notification.mp3";
+        taskhub::AudioFile sound(path.string());
         m_TimerAudioSource->Load(sound);
 
         m_Timer = std::make_unique<taskhub::Timer>([&]{ 
@@ -418,7 +425,6 @@ public:
 
         if (ImGui::BeginPopup("Focus Timer Popup", windowFlags)) {
          
-
             float remainingTime = m_Timer->GetRemainingTime();
             std::string formattedRemTime = std::format("{:02}:{:02}", static_cast<int>(remainingTime) / 60, static_cast<int>(remainingTime) % 60);
             std::string formattedSetTime = std::format("{:02}:{:02}", static_cast<int>(m_SetTime.count()) / 60, static_cast<int>(m_SetTime.count()) % 60);
@@ -430,9 +436,9 @@ public:
             ImVec4 endColor(0.9f, 0.3f, 0.2f, 1.0f);
  
             // Interpolate from startColor to endColor based on progress
-            float r = (1.0f - progress) * startColor.x + progress * endColor.x;
-            float g = (1.0f - progress) * startColor.y + progress * endColor.y;
-            float b = (1.0f - progress) * startColor.z + progress * endColor.z;
+            const float r = (1.0f - progress) * startColor.x + progress * endColor.x;
+            const float g = (1.0f - progress) * startColor.y + progress * endColor.y;
+            const float b = (1.0f - progress) * startColor.z + progress * endColor.z;
 
             uint32_t progressColor = IM_COL32((int)(r * 255), (int)(g * 255), (int)(b * 255), 255);
 
@@ -457,21 +463,14 @@ public:
                 if (!m_Timer->IsRunning()) {
                     ImGui::SameLine();
                     if (ImGui::Button("+")) {
-                        m_SetTime += 1min;
+                        m_SetTime += 5min;
                     }
                     ImGui::SameLine();
                     if (ImGui::Button("-")) {
-                        m_SetTime -= 1min;
+                        m_SetTime -= 5min;
                     }
                 }
-
-                static bool test = false;
-
-                taskhub::UI::ToggleButton("test", &test);
-
-      
             }
-
 
             ImGui::EndPopup();
         }
